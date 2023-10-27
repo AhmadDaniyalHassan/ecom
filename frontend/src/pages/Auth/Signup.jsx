@@ -3,7 +3,9 @@ import axios from 'axios'
 import Layout from "../../components/layout/Layout"
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/auth'
-
+import bgLogin from '../../assets/bgLogin.jpg'
+import Header from '../../components/layout/Header'
+import Footer from '../../components/layout/Footer'
 
 const Signup = () => {
    
@@ -57,7 +59,9 @@ const Signup = () => {
 
 
     return (
-        <Layout title="Signup Ecommerce">
+        <>
+        <Header/>
+            <div className=' signup-bg mt-4'>
             <div className='signup'>
                 <div className=' p-2 signup-wrapper'>
                     <h3 className='mb-3 text-center'>Signup Page</h3>
@@ -101,7 +105,9 @@ const Signup = () => {
                     </form>
                 </div>
             </div>
-        </Layout>
+            </div>
+            <Footer/>
+            </>
     )
 }
 

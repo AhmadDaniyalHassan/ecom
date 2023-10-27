@@ -3,6 +3,8 @@ import Layout from "../../components/layout/Layout"
 // import { useAuth } from "../../context/auth"
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
+import Header from '../../components/layout/Header'
+import Footer from '../../components/layout/Footer'
 
 
 const ForgotPassword = () => {
@@ -31,11 +33,10 @@ const ForgotPassword = () => {
 
   return (
 
-
-    <Layout title="Forgot Password -Ecom">
-      <button style={{ marginTop: 15, marginLeft: 15 }} className='btn btn-primary' onClick={() => navigate(-1)}>Go Back</button>
-
-      <div className='forgetpassword'>
+    <>
+      <Header />
+      <button style={{ marginTop: 10, marginLeft: 15 }} className='btn btn-primary mb-2' onClick={() => navigate(-1)}>Go Back</button>
+      <div className='forgetpassword signup-bg'>
         <div className='login-wrapper'>
           <h3 className='text-center mb-4'>Forgot Password</h3>
 
@@ -58,7 +59,8 @@ const ForgotPassword = () => {
           </form>
         </div>
       </div>
-    </Layout>
+      <Footer />
+    </>
   )
 }
 

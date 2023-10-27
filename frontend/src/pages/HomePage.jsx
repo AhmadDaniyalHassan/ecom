@@ -122,8 +122,7 @@ const HomePage = () => {
                             <h1 className="display-3 fw-bold mb-3">Elevate Your Style</h1>
                             <p className="lead mb-5">Shop with style and simplicity. Discover our curated collection of must-have products for a sophisticated shopping experience.</p>
                             <div className="d-grid gap-2 d-sm-flex justify-content-sm-center">
-                                <button type="button" className="btn btn-light btn-lg px-4 gap-3">Shop Now</button>
-                                <button type="button" className="btn btn-outline-light btn-lg px-4">Know About Us</button>
+                                <Link to={"/about"} className="btn btn-outline-light btn-lg px-4">Know About Us</Link>
                             </div>
                         </div>
                     </div>
@@ -183,7 +182,7 @@ const HomePage = () => {
                     </div>
                     <div className='m-2 p-2'>
                         {product && product.length < total && (
-                            <button className='btn text-light bg-success
+                            <button className='btn  text-light bg-success
                             loadmore' onClick={(e) => {
                                     e.preventDefault()
                                     setPage(page + 1)

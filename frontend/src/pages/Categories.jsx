@@ -3,9 +3,12 @@ import React, { useState, useEffect } from 'react'
 import useCategory from '../hooks/useCategory.js'
 import { Link } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
-
-
+import clothes from '../assets/clothes-category1.avif';
 const Categories = () => {
+    const images = [
+        { id: 2, src: clothes, alt: 'clothes' },
+    ];
+
     const navigate = useNavigate()
 
     const categories = useCategory()
@@ -19,35 +22,39 @@ const Categories = () => {
                 <div className="d-flex justify-content-center mt-3"> <span className="text text-center">Finding Best Products Now<br /> in Your Fingertips</span>
                 </div>
                 <div className="row mt-2 g-4">
-                    <div className="col-md-3">
-                        {categories?.map(c => (
-                            <div className="card p-1" key={c._id}>
-                                <div>
-                                    <Link to={`/category/${c.slug}`} className="d-flex justify-content-between align-items-center p-2" >
-                                        <div className="flex-column lh-1 imagename"> <b>{c.slug}</b> </div>
-                                        <div> <img src="https://i.imgur.com/b9zkoz0.jpg" height={100} width={100} /> </div>
-                                    </Link>
+
+                    {categories?.map(c => (
+                        <div className="container d-flex  align-items-center
+                         justify-content-center">
+                            <Link to={`/category/${c.slug}`} className="d-flex justify-content-between mb-6 text-light align-items-center p-2" >
+                                <div className="card text-light border-0 shadow" style={{ maxWidth: '20em' }}>
+                                    {images.map((image) => (
+                                        <div key={image.id}>
+                                            <img src={image.src} alt={c.slug} style={{ maxWidth: '20em' }} />
+                                        </div>
+                                    ))}
+
+                                    <div className="card-img-overlay text-center">
+                                        <h5 className="card-title fw-bold fs-1">{c.slug}</h5>
+                                        <button className="btn btn-outline-light btn-sm rounded-0 mt-2">Shop Now</button>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
-                    <div className="col-md-3">
-                        <div className="card p-2">
-                            <div className="d-flex justify-content-between align-items-center p-2">
-                                <div className="flex-column lh-1 imagename"> <b>Head</b> <b>Phones</b> </div>
-                                <div> <img src="https://i.imgur.com/SHWASPG.png" height={100} width={100} /> </div>
-                            </div>
+                            </Link>
                         </div>
-                    </div>
+                    ))}
                 </div>
             </div>
 
 
 
 
-
-        </Layout>
+        </Layout >
     )
 }
 
 export default Categories
+{/* <div className="col-12 col-sm-8 col-md-6 col-lg-4">
+<div className="card-body">
+    <Link to={`/category/${c.slug}`} className="d-flex justify-content-between align-items-center p-2" >
+    </Link>
+</div> */}

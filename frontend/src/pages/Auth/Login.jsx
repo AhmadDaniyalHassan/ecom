@@ -3,6 +3,8 @@ import Layout from "../../components/layout/Layout"
 import { useAuth } from '../../context/auth'
 import axios from 'axios'
 import { useNavigate, useLocation } from 'react-router-dom'
+import Footer from '../../components/layout/Footer'
+import Header from '../../components/layout/Header'
 
 const Login = () => {
   const [email, setEmail] = useState('')
@@ -39,10 +41,9 @@ const Login = () => {
   }
   handleNavigation()
   return (
-
-
-    <Layout title="Login Ecommerce">
-      <div className='login'>
+    <>
+      <Header />
+      <div className='login signup-bg mt-4'>
         <div className='login-wrapper'>
           <h3 className='text-center mb-4'>Login Page</h3>
           <form onSubmit={handleSubmit}>
@@ -66,8 +67,8 @@ const Login = () => {
           </form>
         </div>
       </div>
-
-    </Layout>
+      <Footer />
+    </>
   )
 }
 

@@ -1,0 +1,37 @@
+{
+  "name": "login-auth-react-project",
+  "version": "1.0.0",
+  "description": "This repository contains the source code and documentation for an Ecommerce website built using the MERN (MongoDB, Express.js, React.js, Node.js) stack. The project aims to provide a robust and scalable platform for running an online store.",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node backend/server.js",
+    "server": "nodemon backend/server.js",
+    "client": "npm run dev --prefix frontend/ecommerce-project"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.2",
+    "braintree": "^3.16.0",
+    "cloudinary": "^1.40.0",
+    "colors": "^1.4.0",
+    "concurrently": "^8.2.0",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "express-fileupload": "^1.4.0",
+    "express-formidable": "^1.2.0",
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^7.2.1",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.9.2",
+    "nodemon": "^3.0.1",
+    "slugify": "^1.6.6"
+  },
+  "keywords": []
+}

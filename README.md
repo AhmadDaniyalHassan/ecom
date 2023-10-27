@@ -13,6 +13,13 @@ This repository contains the source code and documentation for an Ecommerce webs
 - Responsive design for mobile and desktop devices
 - Secure password hashing and storage
 - RESTful API for seamless communication between the frontend and backend
+- Product Reviews Functionality
+- Delete, Update, Create and Edit Product from Frontend with the help of Backend RESTful API
+- Pagination System to Load More Products
+- Seamless Navigation Between Pages
+- Subscribe to Our News & Offers Mail with NodeMailer
+- Resetting User Account Password Functionality
+- Admin Can Add, Delete, Edit Category Functionality
 
 ## Technologies Used
 

@@ -1,19 +1,24 @@
 import React, { useState, useEffect } from 'react'
+import AdminMenu from '../../components/layout/AdminMenu'
 import Layout from '../../components/layout/Layout'
-import UserMenu from '../../components/layout/UserMenu'
-import axios from "axios"
+import axios from 'axios'
 import { useAuth } from '../../context/auth'
 import moment from 'moment'
+import { Select } from 'antd'
+import { Option } from 'antd/es/mentions'
 import { useNavigate } from 'react-router-dom'
 
-const Order = () => {
+const AdminOrder = () => {
+    const navigate = useNavigate()
+
+    const [status, setStatus] = useState(["Not Process", "Processing", "Shipped", "Delivered", "Cancelled"])
+    const [changeStatus, setChangeStatus] = useState("")
     const [orders, setOrders] = useState([])
     const [auth, setAuth] = useAuth()
-    const navigate = useNavigate()
 
     const getOrders = async () => {
         try {
-            const { data } = await axios.get('http://localhost:8000/api/user/orders')
+            const { data } = await axios.get('http://localhost:8000/api/user/all-orders')
             setOrders(data)
         } catch (error) { console.log(error) }
     }
@@ -23,19 +28,27 @@ const Order = () => {
 
     }, [auth?.token])
 
+    const handleChange = async (orderId, value) => {
+        try {
+            const { data } = await axios.put(`http://localhost:8000/api/user/order-status/${orderId}`, { status: value })
+            getOrders()
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
 
     return (
-        <Layout title='User-Order' description='Order Page'>
+        <Layout title={'Admin Orders'}>
             <button style={{ marginTop: 15, marginLeft: 15, marginBottom: 15 }} className='btn btn-primary' onClick={() => navigate(-1)}>Go Back</button>
 
             <div className='container-fluid m-3 p-3'>
-                <div className='row'>
-                    <div className='col-md-2 mt-2'>
-                        <UserMenu />
+                <div className="row">
+                    <div className="col-md-2 margin-admin">
+                        <AdminMenu />
                     </div>
-                    <div className='col-md-8'>
-                        <h2>All Orders</h2>
+                    <div className='col-md-9'>
+                        <h2 className="text-center">Admin All Orders</h2>
                         {orders?.map((o, i) => (
                             <div key={i} className='border shadow'>
                                 <table className='table'>
@@ -43,7 +56,8 @@ const Order = () => {
                                         <tr>
                                             <th scope='col'>#</th>
                                             <th scope='col'>Status</th>
-                                            <th scope='col'>Buyer</th>
+                                            <th scope='col'>Buyer Name</th>
+                                            <th scope='col'>Buyer Email</th>
                                             <th scope='col'>Orders</th>
                                             <th scope='col'>Payment</th>
                                             <th scope='col'>Total Products</th>
@@ -52,8 +66,16 @@ const Order = () => {
                                     <tbody>
                                         <tr>
                                             <td>{i + 1}</td>
+                                            <td>
+                                                <Select defaultValue={o?.status} bordered={false} onChange={(value, orderId) => handleChange(o._id, value)}>
+                                                    {status.map((s, i) => (
+                                                        <Option key={i} value={s}>{s}</Option>
+                                                    ))}
+                                                </Select>
+                                            </td>
                                             <td>{o?.status}</td>
                                             <td>{o?.purchaser?.name}</td>
+                                            <td>{o?.purchaser?.email}</td>
                                             <td>{moment(o?.createAt).fromNow()}</td>
                                             <td>{o?.payment?.success ? "Success" : "Failed"}</td>
                                             <td>{o?.products?.length}</td>
@@ -84,4 +106,4 @@ const Order = () => {
     )
 }
 
-export default Order
+export default AdminOrder

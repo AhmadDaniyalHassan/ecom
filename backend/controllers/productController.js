@@ -49,16 +49,12 @@ export const brainTreePaymentsController = async (req, res) => {
         if (result) {
           const order = new orderModel({
             products: cart,
-            payment_method: result,
+            payment: result,
             purchaser: req.user._id,
           }).save();
-          res
-            .status(200)
-            .send({ success: true, message: "Payment Successfull", order });
+          res.json({ ok: true });
         } else {
-          res
-            .status(500)
-            .send({ success: false, message: "Pament failed", error });
+          res.status(500).send(error);
         }
       }
     );

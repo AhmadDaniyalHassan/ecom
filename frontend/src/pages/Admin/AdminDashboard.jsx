@@ -6,9 +6,6 @@ import { useAuth } from '../../context/auth'
 const AdminDashboard = () => {
 
     const [auth] = useAuth()
-
-
-
     return (
         <Layout>
             <button style={{ marginTop: 15, marginLeft: 15 }} className='btn btn-primary' onClick={() => navigate(-1)}>Go Back</button>

@@ -9,16 +9,16 @@ const Dashboard = () => {
     return (
 
         <Layout title="Dashboard - User-Panel">
-            <div className='container-fluid p-2 m-2'>
+            <div className='container-fluid m-3 p-3'>
                 <div className='row'>
-                    <div className='col md-3'>
+                    <div className='col-md-2 mt-2'>
                         <UserMenu />
                     </div>
                     <div className='col md-9'>
                         <div className='card w-75 p-3'>
-                            <h3>{auth?.user.name}</h3>
-                            <h3>{auth?.user.email}</h3>
-                            <h3>{auth?.user.address}</h3>
+                            <h4>Name:<span className='h5'> {auth?.user.name}</span></h4>
+                            <h4>Email:<span className='h5'> {auth?.user.email}</span></h4>
+                            <h4>Address: <span className='h5'>{auth?.user.address}</span></h4>
                         </div>
                     </div>
                 </div>

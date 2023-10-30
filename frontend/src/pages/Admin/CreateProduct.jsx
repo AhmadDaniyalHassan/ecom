@@ -7,7 +7,6 @@ import { useNavigate } from 'react-router-dom'
 import toast from "react-hot-toast";
 
 const { Option } = Select
-
 const CreateProduct = () => {
     const navigate = useNavigate()
 
@@ -67,13 +66,14 @@ const CreateProduct = () => {
     return (
 
         <Layout title='Create Product'>
+            <button style={{ marginTop: 15, marginLeft: 15, marginBottom: 15 }} className='btn btn-primary' onClick={() => navigate(-1)}>Go Back</button>
             <div className='container-fluid m-3 p-3'>
-                <div className='row'>
-                    <div className='col-md-2 mt-2'>
+                <div className="row">
+                    <div className="col-md-2 margin-admin">
                         <AdminMenu />
                     </div>
                     <div className='col-md-9'>
-                        <h3>Create Product</h3>
+                        <h3 className="text-center">Create Product</h3>
                         <div className='m-1'></div>
                         <form onSubmit={handleSubmit}>
                             <Select bordered={false}

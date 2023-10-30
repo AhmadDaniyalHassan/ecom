@@ -12,7 +12,7 @@ import {
   getSingleProductController,
   productCategoryController,
   getSimilarProductController,
-  productCountController
+  productCountController,
 } from "../controllers/productController.js";
 import { isAdmin, verifyToken } from "../middleware/authMiddleware.js";
 import cloudinary from "cloudinary";
@@ -72,6 +72,6 @@ productRouter.get("/similar-product/:pid/:cid", getSimilarProductController);
 
 productRouter.get("/product-count", productCountController);
 
-productRouter.get("/product-list/:page",productListController)
+productRouter.get("/product-list/:page", productListController);
 
 export default productRouter;

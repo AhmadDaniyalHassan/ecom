@@ -3,9 +3,11 @@ import AdminMenu from "../../components/layout/AdminMenu.jsx";
 import Layout from "../../components/layout/Layout.jsx";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { useNavigate } from 'react-router-dom'
 
 const ProductAdmin = () => {
     const [products, setProducts] = useState([]);
+    const navigate = useNavigate()
 
     // Get all products
     const getAllProducts = async () => {
@@ -34,9 +36,11 @@ const ProductAdmin = () => {
 
     return (
         <Layout>
+            <button style={{ marginTop: 15, marginLeft: 15, marginBottom: 15 }} className='btn btn-primary' onClick={() => navigate(-1)}>Go Back</button>
+
             <div className='container-fluid m-3 p-3'>
                 <div className="row">
-                    <div className="col-md-2 mt-3">
+                    <div className="col-md-2 margin-admin">
                         <AdminMenu />
                     </div>
                     <div className="col-md-9">

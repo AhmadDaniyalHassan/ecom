@@ -24,6 +24,7 @@ import ForgotPassword from "./pages/Auth/ForgotPassword.jsx";
 import AdminDashboard from "./pages/Admin/AdminDashboard.jsx";
 import CreateCategory from "./pages/Admin/CreateCategory.jsx";
 import About from './pages/About.jsx';
+import AdminOrder from './pages/Admin/AdminOrder.jsx';
 // import Misc from './pages/misc.jsx';
 
 function App() {
@@ -69,6 +70,7 @@ function App() {
           <Route path="admin/create-category" element={<CreateCategory />} />
           <Route path="admin/create-product" element={<CreateProduct />} />
           <Route path="admin/products" element={<ProductAdmin />} />
+          <Route path="admin/orders" element={<AdminOrder />} />
           <Route path="admin/update-product/:slug" element={<UpdateProduct />} />
           <Route path="admin/show-user" element={<UserShow />} />
         </Route>

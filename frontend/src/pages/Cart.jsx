@@ -3,7 +3,7 @@ import Layout from "../components/layout/Layout"
 import { useCart } from '../context/cart'
 import { useAuth } from '../context/auth'
 import { useNavigate } from 'react-router-dom'
-// import DropIn from "braintree-web-drop-in-react";
+import DropIn from "braintree-web-drop-in-react";
 import axios from 'axios'
 
 const AddToCart = () => {
@@ -14,7 +14,7 @@ const AddToCart = () => {
   const [loading, setLoading] = useState(false)
 
   const navigate = useNavigate()
-  let shipping = 200
+  let shipping = 300
 
   const totalPrice = () => {
     try {
@@ -40,26 +40,52 @@ const AddToCart = () => {
     }
   }
 
-  const handleSubmitOrder = async (e) => {
-    e.preventDefault()
+  const getToken = async () => {
     try {
-      setLoading(true)
-      const { data } = await axios.post('http://localhost:8000/api/product/order', {
-        cart,
-        totalPrice: totalPrice()
-      })
-      setLoading(false)
-      localStorage.removeItem('cart')
-      setCart([])
-      navigate('/dashboard/orders')
-
-
-
+      const { data } = await axios.get('http://localhost:8000/api/product/braintree/token')
+      setClientToken(data?.clientToken)
     } catch (error) {
       console.log(error)
     }
-
   }
+
+  const handlePayment = async () => {
+    try {
+      setLoading(true)
+      const { nonce } = instance.requestPaymentMethod()
+      const { data } = await axios.post('http://localhost:8000/api/product/braintree/payment', { nonce, cart })
+      setLoading(false)
+      localStorage.removeItem('cart')
+      setCart([])
+      navigate('/dashboard/user/orders')
+    } catch (error) {
+      console.log(error);
+      setLoading(false)
+    }
+  }
+  useEffect(() => {
+    getToken()
+  }, [auth?.token])
+
+
+  // const handleSubmitOrder = async (e) => {
+  //   e.preventDefault()
+  //   try {
+  //     setLoading(true)
+  //     const { data } = await axios.post('http://localhost:8000/api/product/order', {
+  //       cart,
+  //       totalPrice: totalPrice()
+  //     })
+  //     setLoading(false)
+  //     localStorage.removeItem('cart')
+  //     setCart([])
+  //     navigate('/dashboard/orders')
+
+  //   } catch (error) {
+  //     console.log(error)
+  //   }
+
+  // }
 
   return (
     <Layout title={"Cart - Ecom"}>
@@ -67,104 +93,73 @@ const AddToCart = () => {
         <div className='row'>
           <div className='col-md-12'>
 
-            <h4 className='text-center mb-3 mt-2'>
+            <h5 className='text-center mb-3 mt-2'>
               {cart?.length ? `You have ${cart.length} item in your cart
                ${auth?.token ? "" : "Please Login to CheckOut"}`
                 : "Your Cart Is Empty"}
-            </h4>
+            </h5>
           </div>
-          <div className='row'>
-            <div className='col-md-7'>
+          <div className='row '>
+            <div className='col-md-6'>
               {cart?.map(prod => (
-                <div key={prod._id} className='row mb-2 p-3 card flex-row'>
-                  <div className='col-md-3'>
-                    <img style={{ padding: '4px', width: '140px', marginTop: '20px' }}
-                      src={prod.image[0]}
-                      className='card-img-top' alt={prod.name} />
-                  </div>
-                  <div className='col-md-8'>
-                    <p>{prod.name}</p>
-                    <p>Description: {prod.description.substring(0, 30)}</p>
-                    <p>Price: {prod.price}</p>
+                <div key={prod._id} className='row mb-2 p-2 card flex-row'>
+
+                  <img style={{ padding: '2px', width: '6rem', marginTop: '10px', borderRadius: '10px' }}
+                    src={prod.image}
+                    className='card-img-top' alt={prod.name} />
+
+                  <div className='row-md-8'>
+                    <p className='mb-2'><b>Name:</b> {prod.name}</p>
+                    <p className='mb-2'><b>Info:</b> {prod.description.substring(0, 10)}...</p>
+                    <p className='mb-2'><b>Price: </b>{prod.price}</p>
                     <button className='btn btn-danger' onClick={() => removeCartItem(prod._id)}>Remove</button>
                   </div>
                 </div>
               ))}
             </div>
-            <div className='col-md-5 text-center'>
+            <div className='col-md-6 text-center'>
 
-              <h3>Cart Summary</h3>
-              <p>Total | Checkout </p>
-
+              <h4>Cart Summary</h4>
+              <p>Total | Checkout | Payment </p>
               <hr />
-              <h4>Shipping: {shipping}RS </h4>
-              <h4>Total: {totalPrice()}RS </h4>
+              <h5>Shipping: <span className='h6'>{shipping}RS</span> </h5>
+              <h5>Total: <span className='h6'>{totalPrice()}RS</span> </h5>
               {auth?.user?.address ? (
                 <>
-                  <div className='mb-3'>
-                    <h4>Current Address</h4>
-                    <h5>{auth?.user?.address}</h5>
-                    <button onClick={() => { navigate('/dashboard/user/profile') }} className='btn btn-outline-warning'>Update Address</button>
-                    &nbsp;
-                    <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                      Checout
-                    </button>
-                    &nbsp;
-
-
+                  <div className='mb-4'>
+                    <h5>Current Address: <span className='h6'>{auth?.user?.address}</span></h5>
+                  </div>
+                  <div>
+                    <button onClick={() => { navigate('/dashboard/user/profile') }} className='btn btn-warning'>Update Address</button>
                   </div>
                 </>
               ) : (
                 <div className='mb-3'>
                   {auth?.token ? (
-                    <button onClick={() => { navigate('/dashboard/user/profile') }} className='btn btn-outline-warning'>Update Address</button>
+                    <button onClick={() => { navigate('/dashboard/user/profile') }} className='btn btn-warning'>Update Address</button>
                   ) : (
                     <button onClick={() => navigate('/login', {
                       state: '/cart'
-                    })} className='btn btn-outline-warning'>Please Login To CheckOut</button>
+                    })} className='btn btn-warning'>Please Login To CheckOut</button>
                   )}
                 </div>
               )}
-              <div>
-                <div className="modal fade" id="exampleModal" tabIndex={-1} aria-labelledby="exampleModalLabel" aria-hidden="true">
-                  <div className="modal-dialog">
-                    <div className="modal-content">
-                      <div className="modal-header">
-                        <h5 className="modal-title" id="exampleModalLabel">Order Modal</h5>
-                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" />
-                      </div>
-                      <div className="modal-body">
-                        <form onSubmit={handleSubmitOrder}>
-                          <div className="mb-3">
-                            Name
-                            <input required value={auth?.user?.name} placeholder='Enter Your Name' type="text" className="form-control" />
-                            <div className="form-text"></div>
-                          </div>
-                          Phone
-                          <div className="mb-3">
-                            <input required value={auth?.user?.phone} onChange={(e) => setPhone(e.target.value)} type="text" placeholder='Enter Your Phone Number' className="form-control" />
-                            <div className="form-text"></div>
-                          </div>
-                          <b>Payment Method</b>
-                          <div style={{ textAlign: 'center' }} className="mb-3">
-                            <input name='role' value={0} onChange={(e) => { setPaymentMethod(e.target.value) }} type="radio" />Cash On Delivery &nbsp;
-                            <input name='role' value={1} onChange={(e) => { setPaymentMethod(e.target.value) }} type="radio" />Credit/Debit Card
-                            <div className="form-text"></div>
-                          </div>
-                          Address
-                          <div className="mb-3 ">
-                            <textarea required value={auth?.user?.address} placeholder='Enter Your Address' type="text" className="form-control" />
-                            <div className="form-text"></div>
-                          </div>
-                        </form>
-                      </div>
-                      <div className="modal-footer">
-                        <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Dismiss</button>
-                        <button type="button" className="btn btn-primary">Confirm</button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              <div className='mt-2 '>
+                {!clientToken || !cart?.length ? (
+                  ""
+                ) : (
+                  <>
+                    <DropIn
+                      options={{
+                        authorization: clientToken,
+                        paypal: {
+                          flow: 'vault'
+                        }
+                      }}
+                      onInstance={(instance) => setInstance(instance)} />
+                    <button disabled={loading || !instance || !auth?.user?.address} onClick={handlePayment} className='btn btn-success'>{loading ? "Processing..." : "Make Payment"}</button>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -175,44 +170,3 @@ const AddToCart = () => {
 }
 
 export default AddToCart
-// const getToken = async () => {
-//   try {
-//     const { data } = await axios.get('http://localhost:8000/api/product/braintree/token')
-//     console.log(data)
-//     setClientToken(data?.clientToken)
-
-//   } catch (error) {
-//     console.log(error)
-//   }
-// }
-// const handlePayment = async () => {
-//   try {
-//     setLoading(true)
-
-//     const { nonce } = await instance.requestPaymentMethod();
-//     const { data } = await axios.post('http://localhost:8000/api/product/braintree/payment', {
-//       nonce, cart
-//     })
-
-//     setLoading(false)
-//     localStorage.removeItem('cart')
-//     setCart([])
-//     navigate('/dashboard/orders')
-
-
-// <DropIn options={{
-//   authorization: clientToken,
-//   paypal: { flow: 'vault' },
-// }} onInstance={(instance) => setInstance(instance)} />
-
-//   } catch (error) {
-//     console.log(error)
-//     setLoading(false)
-//   }
-// }
-
-
-// useEffect(() => {
-//   getToken()
-
-// }, [auth?.token])

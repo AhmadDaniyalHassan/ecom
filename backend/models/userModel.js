@@ -29,11 +29,10 @@ const userSchema = mongoose.Schema(
     role: {
       type: Number,
       default: 0,
-      required: true,
     },
   },
 
-  { timeStamps: true }
+  { timestamps: true }
 );
 
 export default mongoose.model("User", userSchema);

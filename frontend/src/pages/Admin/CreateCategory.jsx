@@ -4,8 +4,11 @@ import AdminMenu from '../../components/layout/AdminMenu'
 import axios from 'axios'
 import CategoryForm from '../../components/Form/CategoryForm'
 import { Modal } from "antd"
+import { useNavigate } from 'react-router-dom'
 
 const CreateCategory = () => {
+    const navigate = useNavigate()
+
 
     const [category, setCategory] = useState([])
     const [name, setName] = useState('')
@@ -76,17 +79,19 @@ const CreateCategory = () => {
 
     return (
         <Layout title='Create Category'>
+            <button style={{ marginTop: 15, marginLeft: 15, marginBottom: 15 }} className='btn btn-primary' onClick={() => navigate(-1)}>Go Back</button>
+
             <div className='container-fluid m-3 p-3'>
-                <div className='row'>
-                    <div className='col-md-2 mt-2'>
+                <div className="row">
+                    <div className="col-md-2 margin-admin">
                         <AdminMenu />
                     </div>
-                    <div className='col-md-9'>
-                        <h3>Manage Category</h3>
-                        <div className='p-3 w-50'>
+                    <div className='col-md-9 '>
+                        <h3 className="text-center mb-0 mt-3 ">Manage Category</h3>
+                        <div className='p-2 w-50 mt-3'>
                             <CategoryForm handleSubmit={handleSubmit} value={name} setValue={setName} />
                         </div>
-                        <div className='w-75'>
+                        <div className='w-75 '>
                             <table className="table">
                                 <thead>
                                     <tr>
@@ -99,7 +104,7 @@ const CreateCategory = () => {
 
                                         <tr key={index}>
                                             <td >{item.name}</td>
-                                            <td style={{ display: 'flex', textAlign:"center" }}>
+                                            <td style={{ display: 'flex', textAlign: "center" }}>
                                                 <button className='btn btn-primary ms-2'
                                                     onClick={() => {
                                                         setVisible(true);

@@ -3,8 +3,11 @@ import Layout from '../../components/layout/Layout'
 import UserMenu from '../../components/layout/UserMenu'
 import axios from 'axios'
 import { useAuth } from '../../context/auth'
+import { useNavigate } from 'react-router-dom'
 
 const UserProfile = () => {
+    const navigate = useNavigate()
+
 
     const [auth, setAuth] = useAuth()
     const [name, setName] = useState('')
@@ -56,12 +59,15 @@ const UserProfile = () => {
 
     return (
         <Layout title='User-Profile' description='Profile Page'>
-            <div className='container-fluid p-3 m-3'>
+            <button style={{ marginTop: 15, marginLeft: 15, marginBottom: 15 }} className='btn btn-primary' onClick={() => navigate(-1)}>Go Back</button>
+
+            <div className='container-fluid m-3 p-3'>
                 <div className='row'>
-                    <div className='col md-3 p-1'>
+                    <div className='col-md-2 mt-2'>
                         <UserMenu />
                     </div>
                     <div className='col md-9'>
+                        <h2>Update User Profile</h2>
                         <div className='signup'>
                             <div className=' p-2 signup-wrapper'>
                                 <h3 className='mb-3 text-center'>Update User Profile</h3>
@@ -90,7 +96,7 @@ const UserProfile = () => {
                                         <div className="form-text"></div>
                                     </div>
                                     <div className='text-center'>
-                                        <button type="submit" className="btn btn-primary mb-3">Update</button>
+                                        <button type="submit" className="btn btn-primary mb-3">Update Profile</button>
                                     </div>
                                 </form>
                             </div>

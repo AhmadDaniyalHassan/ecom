@@ -1,7 +1,7 @@
 import { comparedPassword, hashPassword } from "../helper/userHelper.js";
 import userModel from "../models/userModel.js";
 import JWT from "jsonwebtoken";
-
+import orderModel from "../models/orderModel.js";
 //signup or say register method POST
 
 export const registerController = async (req, res) => {
@@ -30,7 +30,7 @@ export const registerController = async (req, res) => {
       if (!phone) {
         return res.send({ message: "Phone is required" });
       } else {
-        const phoneRegex = /^[0-9]{10}$/;
+        const phoneRegex = /^\d{11}$/;
         if (!phoneRegex.test(phone)) {
           return res.send({ message: "Invalid phone number format" });
         }
@@ -46,9 +46,6 @@ export const registerController = async (req, res) => {
             message: "Answer should be between 4 and 12 characters",
           });
         }
-      }
-      if (!role) {
-        return res.send({ message: "Role is required" });
       }
       //check if user already exist
 
@@ -206,15 +203,89 @@ export const updateProfileController = async (req, res) => {
 //orders
 export const getOrdersController = async (req, res) => {
   try {
-    const orders = await userModel
-      .find({ buyer: req.user._id })
+    const orders = await orderModel
+      .find({ purchaser: req.user._id })
       .populate("products")
-      .populate("buyer", "name");
+      .populate("purchaser", "name");
     res.json(orders);
   } catch (error) {
     console.log(error);
     res
       .status(500)
-      .send({ success: false, message: "Error While Updating", error });
+      .send({ success: false, message: "Error While Getting Orders", error });
+  }
+};
+
+export const getAllOrdersController = async (req, res) => {
+  try {
+    const orders = await orderModel
+      .find({})
+      .populate("products")
+      .populate("purchaser", "name")
+      .sort({ createdAt: "-1" });
+    res.json(orders);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Error While Getting All Orders",
+      error,
+    });
+  }
+};
+
+export const getOrderStatus = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { status } = req.body;
+    const orders = await orderModel.findByIdAndUpdate(
+      orderId,
+      { status },
+      { new: true }
+    );
+    res.json(orders);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Error While Updating Orders Status",
+      error,
+    });
+  }
+};
+
+export const getUserController = async (req, res) => {
+  try {
+    const users = await userModel
+      .find({ role: 0 })
+      .select("name address createdAt phone email");
+    res.status(200).send({
+      success: true,
+      message: "Fetching User Succesfull",
+      users,
+    });
+  } catch (error) {
+    console.log(error);
+    res
+      .status(500)
+      .send({ success: false, error, message: "Error In Fetching Users" });
+  }
+};
+
+export const getAdminUserController = async (req, res) => {
+  try {
+    const users = await userModel
+      .find({ role: 1 })
+      .select("name address createdAt phone email");
+    res.status(200).send({
+      success: true,
+      message: "Fetching Admin User Succesfull",
+      users,
+    });
+  } catch (error) {
+    console.log(error);
+    res
+      .status(500)
+      .send({ success: false, error, message: "Error In Fetching Users" });
   }
 };

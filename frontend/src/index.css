@@ -121,9 +121,7 @@ a.dropdown-item {
 
 .signup {
   display: flex;
-  align-items: center;
   justify-content: center;
-  height: 75vh;
   flex-direction: column;
 }
 
@@ -161,12 +159,12 @@ a.dropdown-item {
 }
 
 .signup-wrapper {
-  margin-top: 55px;
+  margin-top: 0px;
   background-color: rgb(145, 145, 145);
   width: 400px;
   border-radius: 4px;
-  padding: 10px;
-  box-shadow: 0 10px 8px -8px grey;
+  padding: 8px;
+  box-shadow: 8px 10px 9px -8px grey;
 }
 
 body {
@@ -235,6 +233,7 @@ body {
     margin: 0 0.5em;
     width: calc(100% / 2);
   }
+  
 }
 @media screen and (max-width: 576px) {
   .card:not(:first-child) {
@@ -715,6 +714,9 @@ a.buy-btn:focus {
   .loadmore {
     margin-left: 8rem;
   }
+  .signup{
+    flex-direction: row;
+  }
 }
 
 @media screen and (max-width: 991px) {
@@ -744,8 +746,13 @@ a.buy-btn:focus {
 
 /* category sect */
 
+
+
 /* login and signup */
 
 .signup-bg {
   background-image: url("../src/assets/bgLogin.jpg");
 }
+
+
+.margin-admin{margin-top: 2.5rem;}

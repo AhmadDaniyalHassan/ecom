@@ -97,7 +97,7 @@ const UpdateProduct = () => {
             <button style={{ marginTop: 15, marginLeft: 15 }} className='btn btn-primary' onClick={() => navigate(-1)}>Go Back</button>
             <div className='container-fluid m-3 p-3'>
                 <div className='row'>
-                    <div className='col-md-3'>
+                    <div className='col-md-3 mt-2'>
                         <AdminMenu />
                     </div>
                     <div className='col-md-9'>

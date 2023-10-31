@@ -30,7 +30,7 @@ export const postReviewController = async (req, res) => {
 
 export const getReviewController = async (req, res) => {
   const { productId } = req.params;
-  const { page = 1, limit = 10 } = req.query;
+  const { page = 1, limit = 2 } = req.query;
 
   try {
     const reviews = await reviewModel
@@ -38,7 +38,7 @@ export const getReviewController = async (req, res) => {
       .limit(limit)
       .skip((page - 1) * limit)
       .sort({ createdAt: -1 })
-      .populate("user productId", "name"); // Populate user details in the review
+      .populate("user", "name"); // Populate user details in the review
 
     res.status(200).send({
       success: true,

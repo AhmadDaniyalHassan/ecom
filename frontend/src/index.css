@@ -162,6 +162,7 @@ a.dropdown-item {
   margin-top: 0px;
   background-color: rgb(145, 145, 145);
   width: 400px;
+  margin-left: 700px;
   border-radius: 4px;
   padding: 8px;
   box-shadow: 8px 10px 9px -8px grey;
@@ -170,16 +171,6 @@ a.dropdown-item {
 body {
   overflow-x: hidden;
   /* Hide horizontal scrollbar */
-}
-
-.dark-theme {
-  background-color: rgb(14, 14, 14);
-  color: white;
-}
-
-.light-theme {
-  background-color: rgb(247, 247, 247);
-  color: black;
 }
 
 ::-webkit-scrollbar {
@@ -233,7 +224,6 @@ body {
     margin: 0 0.5em;
     width: calc(100% / 2);
   }
-  
 }
 @media screen and (max-width: 576px) {
   .card:not(:first-child) {
@@ -714,7 +704,7 @@ a.buy-btn:focus {
   .loadmore {
     margin-left: 8rem;
   }
-  .signup{
+  .signup {
     flex-direction: row;
   }
 }
@@ -746,13 +736,12 @@ a.buy-btn:focus {
 
 /* category sect */
 
-
-
 /* login and signup */
 
 .signup-bg {
   background-image: url("../src/assets/bgLogin.jpg");
 }
 
-
-.margin-admin{margin-top: 2rem;}
+.margin-admin {
+  margin-top: 2rem;
+}

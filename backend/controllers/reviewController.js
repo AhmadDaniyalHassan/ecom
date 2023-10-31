@@ -1,69 +1,55 @@
-// import reviewModel from "../models/reviewModel.js";
-// import productModel from "../models/productModel.js";
+import productModel from "../models/productModel.js";
+import reviewModel from "../models/reviewModel.js";
 
-// export const getReviewController = async (req, res) => {
-//   try {
-//     const { productId } = req.params;
+export const postReviewController = async (req, res) => {
+  const { productId } = req.params;
+  const { user, rating, comment } = req.body;
 
-//     const reviews = await reviewModel.find({ product: productId });
+  try {
+    const review = new reviewModel({ productId, user, rating, comment });
+    await review.save();
 
-//     if (!reviews || reviews.length === 0) {
-//       return res
-//         .status(404)
-//         .json({ error: "No reviews found for the product." });
-//     }
+    // Add the review to the product's reviews array
+    await productModel.findByIdAndUpdate(productId, {
+      $push: { review: review._id },
+    });
 
-//     res.json(reviews);
-//   } catch (err) {
-//     res
-//       .status(500)
-//       .send({ success: false, err, message: "Erroer in Fetching Review" });
-//   }
-// };
+    res.status(200).send({
+      success: true,
+      message: "Review Created Successfully",
+      review,
+    });
+  } catch (error) {
+    res.status(500).send({
+      success: false,
+      message: "Internal server error coming from review",
+      error,
+    });
+  }
+};
 
-// export const createReviewController = async (req, res) => {
-//   try {
-//     const newReview = await Review.create(req.body);
-//     res.status(201).json(newReview);
-//   } catch (err) {
-//     res
-//       .status(500)
-//       .send({ success: false, err, message: "Error In Creating Reviews" });
-//   }
-// };
+export const getReviewController = async (req, res) => {
+  const { productId } = req.params;
+  const { page = 1, limit = 10 } = req.query;
 
-// export const updateReviewController = async (req, res) => {
-//   try {
-//     const { review } = req.body;
-//     const reviews = reviewModel.findByIdAndUpdate(review._id, review, {
-//       new: true,
-//     });
-//     res.status(200).send({
-//       success: true,
-//       message: "Successfully Updated Reviews",
-//       reviews,
-//     });
-//   } catch (error) {
-//     console.log(error);
-//     res
-//       .status(500)
-//       .send({ success: false, error, message: "Error In Updating Reviews" });
-//   }
-// };
+  try {
+    const reviews = await reviewModel
+      .find({ productId })
+      .limit(limit)
+      .skip((page - 1) * limit)
+      .sort({ createdAt: -1 })
+      .populate("user productId", "name"); // Populate user details in the review
 
-// export const deleteReviewController = async (req, res) => {
-//   try {
-//     const { id } = req.params;
-//     const reviews = await reviewModel.findByIdAndDelete(id);
-//     res.status(200).send({
-//       success: true,
-//       message: "Successfully Deleted Reviews",
-//       reviews,
-//     });
-//   } catch (error) {
-//     console.log(error);
-//     res
-//       .status(500)
-//       .send({ success: false, error, message: "Error In Deleting Reviews" });
-//   }
-// };
+    res.status(200).send({
+      success: true,
+      message: "Review Fetched Successfully",
+      reviews,
+    });
+  } catch (error) {
+    res.status(500).send({
+      success: false,
+      message: "Internal server error coming from fetching review",
+      error,
+    });
+  }
+};

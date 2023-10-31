@@ -217,9 +217,7 @@ export const deleteProductController = async (req, res) => {
     if (!product) {
       res.status(400).send({ success: false, message: "Product Not Found" });
     }
-
     await cloudinary.uploader.destroy;
-
     res
       .status(200)
       .send({ success: true, message: "Successfully Deleted product" });

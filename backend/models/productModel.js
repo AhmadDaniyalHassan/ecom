@@ -21,6 +21,12 @@ const productSchema = mongoose.Schema(
       type: mongoose.ObjectId,
       ref: "Category",
     },
+    reviews: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Review",
+      },
+    ],
     in_stock: {
       type: Boolean,
       required: true,

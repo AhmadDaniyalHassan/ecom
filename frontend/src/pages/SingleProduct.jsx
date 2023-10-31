@@ -1,28 +1,71 @@
 import React, { useState, useEffect } from 'react'
+import { useParams } from "react-router-dom"
 import Layout from "../components/layout/Layout"
 import axios from 'axios'
-import { useParams } from "react-router-dom"
 import { useCart } from '../context/cart'
 import { useNavigate } from 'react-router-dom'
 import { Link } from "react-router-dom"
+import { useAuth } from '../context/auth'
+import { useProduct } from '../context/productAuth'
+
 const Product = () => {
 
     const [product, setProduct] = useState({})
     const [cart, setCart] = useCart()
-    const [rating, setRating] = useState(0);
-    const [review, setReview] = useState('');
-    const [dataR, setDataR] = useState([]);
     const [relatedProduct, setRelatedProduct] = useState([])
     const params = useParams()
+    const [reviews, setReviews] = useState([]);
+    const [page, setPage] = useState(1);
+    const [loading, setLoading] = useState(true);
+    const [rating, setRating] = useState('');
+    const [comment, setComment] = useState('');
+    const [productAuth] = useProduct()
 
     const navigate = useNavigate()
+    const [auth] = useAuth()
 
-    const handleRatingChange = (value) => {
-        setRating(value);
+
+    const fetchReviews = async () => {
+        try {
+            const response = await axios.get(`http://localhost:8000/api/review/${productAuth[0]?._id}/get-reviews`, {
+                params: { page },
+            });
+            setReviews(response?.data?.reviews);
+        } catch (error) {
+            console.error('Error fetching reviews:', error);
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const handleCommentChange = (event) => {
-        setReview(event.target.value);
+
+
+    useEffect(() => {
+
+        fetchReviews();
+    }, [page]);
+
+    const handleLoadMore = () => {
+        setPage((prevPage) => prevPage + 1);
+    };
+
+    const handleSubmitReview = async (e) => {
+        e.preventDefault();
+
+        try {
+            const response = await axios.post(`http://localhost:8000/api/review/${productAuth[0]?._id}/reviews`, {
+                rating,
+                comment,
+                user: auth.user._id,
+            });
+            // Add the newly submitted review to the existing reviews array
+            setReviews((prevReviews) => [response.data, ...prevReviews]);
+            // Clear the input fields
+            setRating('');
+            setComment('');
+        } catch (error) {
+            console.error('Error submitting review:', error);
+        }
     };
 
     const getAllProduct = async () => {
@@ -40,79 +83,17 @@ const Product = () => {
         try {
             const { data } = await axios.get(`http://localhost:8000/api/product/similar-product/${pid}/${cid}`)
             setRelatedProduct(data?.products)
-            console.log(data?.products, 'success similar product')
 
         } catch (error) {
             console.log(error, 'from similar products')
         }
     }
 
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        try {
-            const { data } = await axios.post(`http://localhost:8000/api/review/create-review`, { rating, review, p_id: product._id })
-            setRating(data?.rating)
-            setReview(data?.review)
-            console.log(data, 'success review')
-        }
-        catch (error) {
-            console.log(error, 'from review')
-        }
-
-        // Perform your desired action with the rating and ResetReview data
-        console.log('Rating:', rating);
-        console.log('Comment:', review);
-
-        // Reset the form
-        setRating(0);
-        setReview('');
-    };
-
-
-    const getReview = async () => {
-        try {
-            const { data } = await axios.get(`http://localhost:8000/api/review/get-review/`)
-            setDataR(data?.reviews)
-            console.log(data?.reviews, 'success fetched review')
-
-        }
-        catch (error) {
-            console.log(error, 'cant fetch review')
-        }
-    }
 
     useEffect(() => {
         if (params?.slug) { getAllProduct() }
     }, [])
 
-    useEffect(() => {
-        getReview()
-    }, [])
-
-
-    const renderStars = () => {
-        const stars = [];
-        for (let i = 1; i <= 5; i++) {
-            stars.push(
-                <label
-                    key={i}
-                    className={`star ${rating >= i ? 'filled' : ''}`}
-
-                    onClick={() => handleRatingChange(i)}
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                        className="star-icon"
-                    >
-                        <path d="M12 17.27l-5.92 3.2L7 11.62 2.25 7.07l6.88-.95L12 1.5l2.87 4.62 6.88.95L17 11.62l1.92 8.85L12 17.27z" />
-                    </svg>
-                </label>
-            );
-        }
-        return stars;
-    };
 
     return (
         <Layout title="Product-Single - Ecom" >
@@ -132,6 +113,7 @@ const Product = () => {
                     <h4>Category: {product?.category?.name}</h4>
                     <h4>Quantity: {product?.quantity}</h4>
                     <h4>Shipping: {product?.in_stock ? "Yes Available" : "Not Available"}</h4>
+                    <h4>Quantity: {product?.review}</h4>
                     <button className='btn btn-secondary' onClick={() => {
                         setCart([...cart, product]);
                         localStorage.setItem('cart', JSON.stringify({ ...cart, product }))
@@ -176,42 +158,55 @@ const Product = () => {
                                         <span className="visually-hidden">Next</span>
                                     </button>
                                 </div>
-
                             </div>
-                        </div >
-                    </div >
+                        </div>
+                    </div>
                 </div>
-            </div >
+                <div>
+                </div>
+            </div>
             <div>
-                <h2 className='ms-5'>Reviews</h2>
+                <div>
+                    {loading ? (
+                        <p>Loading reviews...</p>
+                    ) : (
+                        <>
+                            <h2>Reviews</h2>
+                            {reviews?.map((pdata) => (
+                                <div key={pdata._id}>
+                                    <h4>{pdata.rating}</h4>
+                                    <h4>{pdata.comment}</h4>
+                                </div>
+                            ))}
+                            <button onClick={handleLoadMore}>Load More</button>
 
-                {dataR?.map((data) => <div key={data?.p_id}>
-                    {data?.p_id}
-                    <h4>Rating: {data.rating}</h4>
-                    <h4>Comment: {data.review}</h4>
-                </div>)}
-            </div>
-            <div className="container mt-5">
-                <h2>Leave a Review</h2>
-                <form onSubmit={handleSubmit}>
-                    <div className="form-group">
-                        <label htmlFor="rating">Rating:</label>
-                        <div className="star-rating">{renderStars()}</div>
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="comment">Comment:</label>
-                        <textarea
-                            className="form-control"
-                            id="comment"
-                            value={review}
-                            onChange={handleCommentChange}
-                        />
-                    </div>
-                    <button type="submit" className="btn btn-primary">Submit</button>
-                </form>
+                            <h2>Submit a Review</h2>
+                            <form onSubmit={handleSubmitReview}>
+                                <label>
+                                    Rating:
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        max="5"
+                                        value={rating}
+                                        onChange={(e) => setRating(e.target.value)}
+                                    />
+                                </label>
+                                <label>
+                                    Comment:
+                                    <textarea
+                                        value={comment}
+                                        onChange={(e) => setComment(e.target.value)}
+                                    />
+                                </label>
+                                <button type="submit">Submit Review</button>
+                            </form>
+                        </>
+                    )}
+                </div>
             </div>
 
-        </Layout >
+        </Layout>
     )
 }
 

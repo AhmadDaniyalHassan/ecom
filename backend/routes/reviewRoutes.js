@@ -1,22 +1,14 @@
-// import express from "express";
-// import { verifyToken } from "../middleware/authMiddleware.js";
-// import {
-//   createReviewController,
-//   updateReviewController,
-//   getReviewController,
-//   deleteReviewController,
-// } from "../controllers/reviewController.js";
+import express from "express";
+import { verifyToken } from "../middleware/authMiddleware.js";
+import {
+  getReviewController,
+  postReviewController,
+} from "../controllers/reviewController.js";
 
-// const reviewRouter = express.Router();
+const reviewRouter = express.Router();
 
-// //admin route only
-// // create category
-// reviewRouter.post("/create-review", verifyToken, createReviewController);
+// GET /products/:id
+reviewRouter.post("/:productId/reviews", verifyToken, postReviewController);
+reviewRouter.get("/:productId/get-reviews", verifyToken, getReviewController);
 
-// reviewRouter.put("/update-review/:id", updateReviewController);
-
-// reviewRouter.get("/get-review/:productId", getReviewController);
-
-// reviewRouter.delete("/delete-review/:id", verifyToken, deleteReviewController);
-
-// export default reviewRouter;
+export default reviewRouter;

@@ -50,12 +50,7 @@ productRouter.get("/search/:keyword", searchProductController);
 productRouter.get("/single-product/:slug", getSingleProductController);
 productRouter.get("/get-product/", getProductController);
 
-productRouter.delete(
-  "/delete-product/:pid",
-  verifyToken,
-  isAdmin,
-  deleteProductController
-);
+productRouter.delete("/delete-product/:pid", deleteProductController);
 
 // payment route
 productRouter.get("/braintree/token", brainTreeTokenController);

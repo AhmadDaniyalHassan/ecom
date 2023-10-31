@@ -5,7 +5,6 @@ import { useAuth } from '../../context/auth'
 
 const Dashboard = () => {
     const [auth] = useAuth()
-
     return (
 
         <Layout title="Dashboard - User-Panel">

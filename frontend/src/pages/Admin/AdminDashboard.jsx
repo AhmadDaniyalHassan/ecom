@@ -16,8 +16,10 @@ const AdminDashboard = () => {
                     </div>
                     <div className='col-md-9 mt-5'>
                         <div className='card w-75 p-2'>
+                            <h3>User Id: {auth?.user?._id}</h3>
                             <h3>Name: {auth?.user?.name}</h3>
                             <h3>Email: {auth?.user?.email}</h3>
+                            <h3>Address: {auth?.user?.address}</h3>
                             <h3>Role: {auth?.user?.role === 1 ? 'Admin' : 'User'}</h3>
                         </div>
                     </div>

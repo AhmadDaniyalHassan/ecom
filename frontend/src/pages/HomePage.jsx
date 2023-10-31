@@ -7,9 +7,7 @@ import { useCart } from '../context/cart'
 import { useWishlist } from '../context/wishlist'
 import wishlists from '../assets/wishlists.svg'
 import { Prices } from '../components/Prices'
-// import { add, remove } from '../store/cartSlice'
-// import { useDispatch } from 'react-redux'
-
+import { useProduct } from '../context/productAuth'
 const HomePage = () => {
     // const dispatch = useDispatch()
     const [product, setProduct] = useState([])
@@ -21,7 +19,7 @@ const HomePage = () => {
     const [cart, setCart] = useCart()
     const [wishlist, setWishlist] = useWishlist()
     const [loading, setLoading] = useState(false)
-
+    const [productAuth, setProductAuth] = useProduct()
 
     const getAllProduct = async () => {
         try {
@@ -175,7 +173,10 @@ const HomePage = () => {
                                         setCart([...cart, pdata]);
                                         localStorage.setItem('cart', JSON.stringify([...cart, pdata]))
                                     }} className='btn btn-secondary' >Add to Cart</button>
-                                    <Link to={`/single-product/${pdata.slug}`} className='btn btn-primary'>Details</Link>
+                                    <Link onClick={() => {
+                                        setProductAuth([...productAuth, pdata]);
+                                        localStorage.setItem('productauth', JSON.stringify([...productAuth, pdata]))
+                                    }} to={`/single-product/${pdata.slug}`} className='btn btn-primary'>Details</Link>
                                 </div>
                             </div>
                         ))}

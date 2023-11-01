@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, lazy, Suspense } from 'react'
 import { useParams } from "react-router-dom"
 import Layout from "../components/layout/Layout"
 import axios from 'axios'
@@ -7,7 +7,10 @@ import { useNavigate } from 'react-router-dom'
 import { Link } from "react-router-dom"
 import { useAuth } from '../context/auth'
 import moment from 'moment'
+<<<<<<< HEAD
 import StarRatings from 'react-star-ratings';
+=======
+>>>>>>> 9d0f0ba747c889ff1c2718a59d9e290a6f77acc2
 
 const Product = () => {
 
@@ -35,11 +38,22 @@ const Product = () => {
             setLoading(false)
         } catch (error) {
             console.error('Error Coming from reviews get request:', error);
+<<<<<<< HEAD
             setLoading(false)
         }
     };
 
 
+=======
+            setloading(false)
+        }
+    };
+
+    const timeOut = setTimeout(() => {
+        fetchReviews()
+        clearTimeout(timeOut)
+    }, 300);
+>>>>>>> 9d0f0ba747c889ff1c2718a59d9e290a6f77acc2
     const handleLoadMore = () => {
         setPage((prevPage) => prevPage + 1);
     };
@@ -60,6 +74,10 @@ const Product = () => {
             setRating('');
             setComment('');
             console.log('success')
+<<<<<<< HEAD
+=======
+            navigate(0)
+>>>>>>> 9d0f0ba747c889ff1c2718a59d9e290a6f77acc2
         } catch (error) {
             console.error('Error submitting review:', error);
         }
@@ -89,13 +107,19 @@ const Product = () => {
 
 
     useEffect(() => {
+<<<<<<< HEAD
         if (params?.slug) { getAllProduct(); fetchReviews() }
     }, [params?.slug, productId])
+=======
+        if (params?.slug) { getAllProduct(); }
+    }, [params?.slug])
+>>>>>>> 9d0f0ba747c889ff1c2718a59d9e290a6f77acc2
 
 
     return (
         <Layout title="Product-Single - Ecom" >
             <button style={{ marginTop: 15, marginLeft: 15 }} className='btn btn-primary' onClick={() => navigate(-1)}>Go Back</button>
+<<<<<<< HEAD
             <section className="py-5">
                 <div className="container px-4 px-lg-5 my-5">
                     <div className="row gx-4 gx-lg-5 align-items-center">
@@ -163,6 +187,103 @@ const Product = () => {
                     </div>
                 )}
 
+=======
+            <div className='row container'>
+                <div className='col-md-6'>
+                    <img style={{
+                        height: "22rem", width: "22rem", padding: '4px', marginTop: '20px', borderRadius: 10,
+                        objectFit: "cover"
+                    }} src={product.image?.[0]}
+                        className='card-img-top' alt={product.name} />
+                </div>
+                <div className='col-md-6 mt-3'>
+                    <h4>Name: {product?.name}</h4>
+                    <h4>Description: {product?.description}</h4>
+                    <h4>Price: {product?.price}</h4>
+                    <h4>Category: {product?.category?.name}</h4>
+                    <h4>Quantity: {product?.quantity}</h4>
+                    <h4>Shipping: {product?.in_stock ? "Yes Available" : "Not Available"}</h4>
+                    <h4>Quantity: {product?.review}</h4>
+                    <button className='btn btn-secondary' onClick={() => {
+                        setCart([...cart, product]);
+                        localStorage.setItem('cart', JSON.stringify({ ...cart, product }))
+                    }}>Add to Cart</button>
+                </div>
+            </div>
+            <div>
+                <h4>Similar Products</h4>
+                {relatedProduct.length < 1 && (<p>No Similar Products Found</p>)}
+                <div className='container'>
+                    <div id="carouselExampleControls" className="carousel slide" data-bs-ride="carousel">
+                        <div className="carousel-inner">
+                            <div className="carousel-item active">
+                                <div className="cards-wrapper">
+                                    <div className='d-flex flex-wrap gap-2 justify-content-start card-similar'>
+                                        {relatedProduct?.map((pdata) => (
+                                            <div className='card m-2 ' style={{ width: "15.0rem", height: '18 rem', padding: '4px' }} key={pdata._id}>
+                                                <img style={{ height: "12rem", width: "14rem", padding: '4px', borderRadius: 10, objectFit: "cover" }} src={pdata?.image} className='card-img-top' alt={pdata.name} />
+                                                <div className='card-body'>
+                                                    <h5 className='card-title'>{pdata?.name}</h5>
+                                                    <p className='card-text'>{pdata?.description}</p>
+                                                    <p className='card-text'>Price: {pdata?.price}</p>
+                                                </div>
+                                                <div style={{ height: '4.7rem', width: '100%' }} className='card-footer d-flex flex-direction-row gap-2 p-3 justify-content-center'>
+                                                    <button className='btn btn-secondary ' onClick={() => {
+                                                        setCart([...cart, pdata]);
+                                                        localStorage.setItem('cart', JSON.stringify([...cart, pdata]))
+                                                    }}>Add to Cart</button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div>
+                                    <button className="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+                                        <span className="carousel-control-prev-icon" aria-hidden="true" />
+                                        <span className="visually-hidden">Previous</span>
+                                    </button>
+                                    <button className="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+                                        <span className="carousel-control-next-icon" aria-hidden="true" />
+                                        <span className="visually-hidden">Next</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <form>
+                            <div className="mb-3">
+                                <label htmlFor="rating" className="form-label">Rating</label>
+                                <input type="number" className="form-control" id="rating" value={rating} onChange={(e) => setRating(e.target.value)} />
+                            </div>
+                            <div className="mb-3">
+                                <label htmlFor="comment" className="form-label">Comment</label>
+                                <textarea className="form-control" id="comment" value={comment} onChange={(e) => setComment(e.target.value)} />
+                            </div>
+                            <button type="submit" className="btn btn-primary" onClick={handleSubmitReview}>Submit</button>
+                            {loading || reviews.length === 0 ? (
+                                <p>Loading...</p>
+                            ) : (
+                                <div>
+                                    {reviews.map((r, i) => (
+                                        <div className='card m-2 ' style={{ width: '15.0rem', height: '18 rem', padding: '4px' }} key={i}>
+                                            <div className='card-body'>
+                                                <h5 className='card-title'>{r.comment}</h5>
+                                                <p className='card-text'>{r.rating}</p>
+                                                <p className='card-text'>{r.user.name}</p>
+                                                <p className='card-text'>{moment(r.createdAt).format('ddd, Do, MMM h:mm A ')}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                            <button onClick={handleLoadMore}>Load More</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div>
+>>>>>>> 9d0f0ba747c889ff1c2718a59d9e290a6f77acc2
             </div>
             <div className='d-flex justify-content-center'>
                 <button className='btn btn-outline-dark mt-auto ' onClick={handleLoadMore}>Load More Reviews</button>

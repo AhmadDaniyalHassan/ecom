@@ -152,14 +152,16 @@ const HomePage = () => {
                     <h4 className='text-center'>Home</h4>
                     <div style={{ justifyContent: 'center' }} className='d-flex flex-wrap'>
                         {product?.map((pdata) => (
-                            <div className='card m-2 ' style={{ width: "15.0rem", height: '27rem', }} key={pdata._id}>
-                                <img style={{ height: "11rem", width: "15.0rem", padding: '4px', borderRadius: 10, objectFit: "cover" }} src={pdata.image} className='card-img-top' alt={pdata.name} />
+                            <div className='card m-2 ' style={{ width: "15.0rem", height: '25rem', }} key={pdata._id}>
+                                <img style={{ height: "10rem", width: "15.0rem", padding: '4px', borderRadius: 10, objectFit: "cover" }} src={pdata.image} className='card-img-top' alt={pdata.name} />
                                 <div className='card-body p-0'>
-                                    <h5 className='card-title p-0'><b>Name: </b>{pdata?.name}</h5>
-                                    <p className='card-text p-0'><b>Info: </b>{pdata?.description.substring(0, 25)}...</p>
-                                    <p className='card-text'><b>Price: </b> {pdata?.price}</p>
-                                    <p className='card-text'><b>Category: </b> {pdata?.category?.name}</p>
-                                    <img style={{ cursor: 'pointer' }} onClick={() => {
+                                    <h5 className='card-title mb-1'><b>Name: </b>{pdata?.name}</h5>
+                                    <p className='card-text mb-1'><b>Info: </b>{pdata?.description.substring(0, 25)}...</p>
+                                    <p className='card-text mb-1'><b>Price: </b> {pdata?.price}</p>
+                                    <p className='card-text mb-1'><b>Category: </b> {pdata?.category?.name}</p>
+                                    <p className='card-text mb-1'><b>Quantity: </b> {pdata?.quantity}</p>
+
+                                    <img style={{ cursor: 'pointer', marginBottom: '5px'  }} onClick={() => {
                                         setWishlist([...wishlist, pdata]);
                                         localStorage.setItem('wishlist', JSON.stringify([...wishlist, pdata]))
                                     }} src={wishlists} alt="wishlist" width="20px" height="20px" />
@@ -177,7 +179,7 @@ const HomePage = () => {
                     </div>
 
                     <div className='m-2 p-2'>
-                        {product && product.length < total && radio.length === 0  && (
+                        {product && product.length < total && radio.length === 0 && (
                             <button className='btn  text-light bg-success
                             loadmore' onClick={(e) => {
                                     e.preventDefault()

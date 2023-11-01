@@ -14,16 +14,31 @@ const AddToCart = () => {
   const [loading, setLoading] = useState(false)
 
   const navigate = useNavigate()
-  let shipping = 300
+  let shipping = 350
 
   const totalPrice = () => {
     try {
       let total = 0
-      cart?.map((item) => { total = total + item.price });
+      cart?.map((item) => { total = total + (item.price * item.quantity) });
       return total + shipping
     } catch (error) {
       console.log(error)
     }
+  }
+
+  const updateQuantity = (id, newQuantity) => {
+    if (newQuantity < 1) {
+      newQuantity = 1;
+    }
+
+    const updatedCart = cart.map(prod => {
+      if (prod._id === id) {
+        return { ...prod, quantity: newQuantity }
+      }
+      return prod
+    })
+    setCart(updatedCart)
+    localStorage.setItem('cart', JSON.stringify(updatedCart))
   }
 
   const removeCartItem = (id) => {
@@ -67,31 +82,11 @@ const AddToCart = () => {
     getToken()
   }, [auth?.token])
 
-
-  // const handleSubmitOrder = async (e) => {
-  //   e.preventDefault()
-  //   try {
-  //     setLoading(true)
-  //     const { data } = await axios.post('http://localhost:8000/api/product/order', {
-  //       cart,
-  //       totalPrice: totalPrice()
-  //     })
-  //     setLoading(false)
-  //     localStorage.removeItem('cart')
-  //     setCart([])
-  //     navigate('/dashboard/orders')
-
-  //   } catch (error) {
-  //     console.log(error)
-  //   }
-
-  // }
-
   return (
     <Layout title={"Cart - Ecom"}>
       <div className='container'>
         <div className='row'>
-          <div className='col-md-12'>
+          <div className='col-md-11'>
 
             <h5 className='text-center mb-3 mt-2'>
               {cart?.length ? `You have ${cart.length} item in your cart
@@ -100,25 +95,29 @@ const AddToCart = () => {
             </h5>
           </div>
           <div className='row '>
-            <div className='col-md-6'>
+            <div className='col-md-7'>
               {cart?.map(prod => (
-                <div key={prod._id} className='row mb-2 p-2 card flex-row'>
+                <div key={prod._id} style={{ width: "70%", backgroundColor: '#b8b9ba', borderRadius: "20px" }} className='row mb-2 p-2 card flex-row'>
 
-                  <img style={{ padding: '2px', width: '6rem', marginTop: '10px', borderRadius: '10px' }}
+                  <img style={{ padding: '2px', width: '14rem', marginTop: '2px', borderRadius: '10px' }}
                     src={prod.image}
                     className='card-img-top' alt={prod.name} />
-
-                  <div className='row-md-8'>
+                  <div className='col-md-6'>
                     <p className='mb-2'><b>Name:</b> {prod.name}</p>
                     <p className='mb-2'><b>Info:</b> {prod.description.substring(0, 10)}...</p>
                     <p className='mb-2'><b>Price: </b>{prod.price}</p>
-                    <button className='btn btn-danger' onClick={() => removeCartItem(prod._id)}>Remove</button>
+                    <div className='d-flex mb-2 mt-2 ' style={{ height: '40%', alignItems: 'center' }}>
+                      <button onClick={() => updateQuantity(prod._id, prod.quantity - 1)} className='btn btn btn-warning'>-</button>
+                      <p className='mx-2' style={{ marginTop: '10px' }}>{prod.quantity}</p>
+                      <button onClick={() => updateQuantity(prod._id, prod.quantity + 1)} className='btn btn btn-warning'>+</button>
+                      &nbsp;&nbsp;
+                      <button className='btn btn-danger' onClick={() => removeCartItem(prod._id)}>Remove</button>
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
-            <div className='col-md-6 text-center'>
-
+            <div className='col-md-5 text-center'>
               <h4>Cart Summary</h4>
               <p>Total | Checkout | Payment </p>
               <hr />

@@ -21,6 +21,9 @@ const productSchema = mongoose.Schema(
       type: mongoose.ObjectId,
       ref: "Category",
     },
+    quantity: {
+      type: Number,
+    },
     review: [
       {
         type: mongoose.Schema.Types.ObjectId,

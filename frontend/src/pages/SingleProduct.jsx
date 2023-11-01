@@ -8,6 +8,7 @@ import { Link } from "react-router-dom"
 import { useAuth } from '../context/auth'
 import moment from 'moment'
 import StarRatings from 'react-star-ratings';
+import toast from 'react-hot-toast'
 
 const Product = () => {
 
@@ -57,9 +58,8 @@ const Product = () => {
             // Add the newly submitted review to the existing reviews array
             setReviews((prevReviews) => [response.data, ...prevReviews]);
             // Clear the input fields
-            setRating('');
+            setRating(0);
             setComment('');
-            console.log('success')
         } catch (error) {
             console.error('Error submitting review:', error);
         }
@@ -92,22 +92,23 @@ const Product = () => {
         if (params?.slug) { getAllProduct(); fetchReviews() }
     }, [params?.slug, productId])
 
-
     return (
         <Layout title="Product-Single - Ecom" >
             <button style={{ marginTop: 15, marginLeft: 15 }} className='btn btn-primary' onClick={() => navigate(-1)}>Go Back</button>
-            <section className="py-5">
+   
+            <section className="py-2">
                 <div className="container px-4 px-lg-5 my-5">
-                    <div className="row gx-4 gx-lg-5 align-items-center">
+                    <div className="row gx-4 gx-lg-5 align-items-start">
                         <div className="col-md-5"><img className="card-img-top mb-5 mb-md-0" style={{ borderRadius: "20px" }} src={product?.image} alt={product?.name} /></div>
                         <div className="col-md-6">
-                            <h2 className="display-5 fw-bolder mb-1"><span>Name:</span> {product?.name}</h2>
+                            <h2 className="display-8 fw-bolder mb-1"><span className='text-muted h3'>Name:</span> {product?.name}</h2>
+                            <div className="lead mb-1">Category: {product?.category?.name}</div>
+                            <p className="lead mb-1">Description: {product?.description}</p>
+                            <p className="lead mb-1">Quantity: {product?.quantity}</p>
                             <div className="fs-5 mb-1">
-                                <span className="text-decoration-line-through"></span>
-                                <span>Price: {product?.price}</span>
-                                <div className="lead">Category: {product?.category?.name}</div>
+                                <span>Price: {product?.price}&nbsp;&nbsp;</span>
                             </div>
-                            <p className="lead mb-3">Description: {product?.description}</p>
+
                             <div className="d-flex">
                                 <button className="btn btn-outline-dark flex-shrink-0" type="button" onClick={() => {
                                     setCart([...cart, pdata]);
@@ -121,10 +122,11 @@ const Product = () => {
                     </div>
                 </div>
             </section>
-            <div className='row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-around'>
-                <form >
-                    <div className="mb-2">
-                        <label htmlFor="rating" className="form-label">Rating</label>
+            <h4 className='text-center'>Leave A Reviews</h4>
+            <div className='row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center'>
+                <form className='d-flex row' >
+                    <div className="mb-0 mb-2">
+                        <label htmlFor="rating" className="form-label">Rating&nbsp;</label>
                         <StarRatings
                             rating={rating}
                             starRatedColor="gold"
@@ -134,37 +136,38 @@ const Product = () => {
                             changeRating={setRating}
                         />
                     </div>
-                    <div className="mb-2 ">
-                        <label htmlFor="comment" className="form-label">Reviews</label>
+                    <div className="mb-2 justify-content-center">
+                        <label htmlFor="comment" className="form-label">Reviews&nbsp; </label>
                         <textarea className="form-control" id="comment" placeholder='Give Review To This Product' value={comment} onChange={(e) => setComment(e.target.value)} />
                     </div>
-                    <button type="submit" className="btn btn-primary" onClick={handleSubmitReview}>Submit</button>
+                    <button type="submit" className="btn btn-primary justify-content-center mt-2 " onClick={handleSubmitReview}>Submit</button>
                 </form>
-                {loading || reviews.length === 0 ? (
-                    (<p>No Reviews Found</p>)
-                ) : (
-                    <div className='d-flex col'>
-                        {reviews.map((r, i) => (
-                            <div className='card m-2 ' style={{ width: '15.0rem', height: '18 rem', padding: '4px', borderRadius: "12px" }} key={i}>
-                                <div className='card-body '>
-                                    <h5 className='card-title'>{r.comment}</h5>
-                                    <StarRatings
-                                        rating={r.rating}
-                                        starRatedColor="gold"
-                                        starEmptyColor="lightgray"
-                                        starDimension="20px"
-                                        starSpacing="2px"
-                                    />
-                                    <p className='card-text'>{r.user.name}</p>
-                                    <p className='card-text'>{moment(r.createdAt).format('ddd, Do, MMM h:mm A ')}</p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                )}
-
             </div>
-            <div className='d-flex justify-content-center'>
+            <h4 className='text-center mt-2 mb-1'>Our Users Reviews</h4>
+            {loading || reviews.length === 0 ? (
+                (<p>No Reviews Found</p>)
+            ) : (
+                <div className='d-flex flex-row flex-wrap justify-content-center'>
+                    {reviews.map((r, i) => (
+                        <div className='card m-2 ' style={{ width: '20.0rem', height: '12rem', alignItems: 'center', padding: '4px', borderRadius: "12px" }} key={i}>
+                            <div className='card-body '>
+                                <h5 className='card-title mb-1'><b>Review: </b>{r.comment}</h5>
+                                <StarRatings
+                                    rating={r.rating}
+                                    starRatedColor="gold"
+                                    starEmptyColor="lightgray"
+                                    starDimension="20px"
+                                    starSpacing="2px"
+                                />
+                                <p className='card-text mb-1'><b>User:</b> {r.user.name}</p>
+                                <p className='card-text'><b>Created At:</b> {moment(r.createdAt).format('ddd, Do, MMM h:mm A ')}</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
+
+            <div className='d-flex justify-content-center mt-2'>
                 <button className='btn btn-outline-dark mt-auto ' onClick={handleLoadMore}>Load More Reviews</button>
             </div>
             <section className="py-2 bg-light">

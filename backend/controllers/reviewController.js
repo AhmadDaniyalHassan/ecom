@@ -30,11 +30,7 @@ export const postReviewController = async (req, res) => {
 
 export const getReviewController = async (req, res) => {
   const { productId } = req.params;
-<<<<<<< HEAD
   const { page = 1, limit = 5 } = req.query;
-=======
-  const { page = 1, limit = 2 } = req.query;
->>>>>>> 9d0f0ba747c889ff1c2718a59d9e290a6f77acc2
 
   try {
     const reviews = await reviewModel

@@ -297,7 +297,7 @@ export const getSimilarProductController = async (req, res) => {
     const { pid, cid } = req.params;
     const products = await productModel
       .find({ category: cid, _id: { $ne: pid } })
-      .limit(3)
+      .limit(4)
       .populate("category");
     res.status(200).send({
       success: true,
@@ -330,7 +330,7 @@ export const productCountController = async (req, res) => {
 
 export const productListController = async (req, res) => {
   try {
-    const perPage = 4;
+    const perPage = 5;
     const page = req.params.page ? req.params.page : 1;
     const products = await productModel
       .find({})

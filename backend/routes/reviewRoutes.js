@@ -9,6 +9,6 @@ const reviewRouter = express.Router();
 
 // GET /products/:id
 reviewRouter.post("/:productId/reviews", verifyToken, postReviewController);
-reviewRouter.get("/:productId/get-reviews", verifyToken, getReviewController);
+reviewRouter.get("/:productId/get-reviews", getReviewController);
 
 export default reviewRouter;

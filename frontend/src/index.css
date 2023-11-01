@@ -707,8 +707,10 @@ a.buy-btn:focus {
   .signup {
     flex-direction: row;
   }
+  .btn-small-margin {
+    margin-top: 7px;
+  }
 }
-
 @media screen and (max-width: 991px) {
   .wsk-cp-product {
     margin: 40px auto;

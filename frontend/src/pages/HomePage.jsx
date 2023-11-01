@@ -7,7 +7,7 @@ import { useCart } from '../context/cart'
 import { useWishlist } from '../context/wishlist'
 import wishlists from '../assets/wishlists.svg'
 import { Prices } from '../components/Prices'
-import { useProduct } from '../context/productAuth'
+
 const HomePage = () => {
     // const dispatch = useDispatch()
     const [product, setProduct] = useState([])
@@ -19,7 +19,6 @@ const HomePage = () => {
     const [cart, setCart] = useCart()
     const [wishlist, setWishlist] = useWishlist()
     const [loading, setLoading] = useState(false)
-    const [productAuth, setProductAuth] = useProduct()
 
     const getAllProduct = async () => {
         try {
@@ -68,7 +67,6 @@ const HomePage = () => {
         try {
             const { data } = await axios.get('http://localhost:8000/api/category/get-category')
             if (data?.success) {
-
                 setCategory(data?.category)
             }
         } catch (error) {
@@ -136,8 +134,7 @@ const HomePage = () => {
                             </Checkbox>
                         ))}
                     </div>
-                    {/* <button className='btn btn-danger m-2 ms-3' onClick={() => { window.location.reload() }}>Reset Filters</button> */}
-                    {/* price filter */}
+
                     <h4 className='text-center'>Filters By Price</h4>
                     <div className='d-flex flex-column ms-3 p-1 gap-2 m-2 mt-4'>
                         <Radio.Group onChange={e => setRadio(e.target.value)}>
@@ -173,16 +170,14 @@ const HomePage = () => {
                                         setCart([...cart, pdata]);
                                         localStorage.setItem('cart', JSON.stringify([...cart, pdata]))
                                     }} className='btn btn-secondary' >Add to Cart</button>
-                                    <Link onClick={() => {
-                                        setProductAuth([...productAuth, pdata]);
-                                        localStorage.setItem('productauth', JSON.stringify([...productAuth, pdata]))
-                                    }} to={`/single-product/${pdata.slug}`} className='btn btn-primary'>Details</Link>
+                                    <Link to={`/single-product/${pdata.slug}`} className='btn btn-primary'>Details</Link>
                                 </div>
                             </div>
                         ))}
                     </div>
+
                     <div className='m-2 p-2'>
-                        {product && product.length < total && (
+                        {product && product.length < total && radio.length === 0  && (
                             <button className='btn  text-light bg-success
                             loadmore' onClick={(e) => {
                                     e.preventDefault()

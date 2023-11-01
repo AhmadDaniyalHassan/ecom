@@ -35,7 +35,7 @@ const CreateProduct = () => {
         getAllCategory()
 
     }, [])
-
+    let timeout
     const handleSubmit = async (e) => {
         e.preventDefault()
         try {
@@ -53,10 +53,10 @@ const CreateProduct = () => {
                 toast.error(data?.message);
             } else {
                 toast.success("Product Created Successfully");
-                setInterval(() => {
+                timeout = setTimeout(() => {
                     navigate("/dashboard/admin/products");
-
-                }, 1850);
+                    clearTimeout(timeout)
+                }, 1450);
             }
         } catch (error) {
             console.log(error);

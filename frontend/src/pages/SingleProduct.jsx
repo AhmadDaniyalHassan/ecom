@@ -111,8 +111,8 @@ const Product = () => {
 
                             <div className="d-flex">
                                 <button className="btn btn-outline-dark flex-shrink-0" type="button" onClick={() => {
-                                    setCart([...cart, pdata]);
-                                    localStorage.setItem('cart', JSON.stringify([...cart, pdata]))
+                                    setCart([...cart, product]);
+                                    localStorage.setItem('cart', JSON.stringify([...cart, product]))
                                 }}>
                                     <i className="bi-cart-fill me-1" />
                                     Add to cart

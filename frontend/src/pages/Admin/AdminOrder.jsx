@@ -58,8 +58,9 @@ const AdminOrder = () => {
                                             <th scope='col'>Status</th>
                                             <th scope='col'>Buyer Name</th>
                                             <th scope='col'>Buyer Email</th>
-                                            <th scope='col'>Orders</th>
-                                            <th scope='col'>Payment</th>
+                                            <th scope='col'>Buyer Phone</th>
+                                            <th scope='col'>Order Time</th>
+                                            <th scope='col'>Payment Status</th>
                                             <th scope='col'>Total Products</th>
                                         </tr>
                                     </thead>
@@ -73,9 +74,9 @@ const AdminOrder = () => {
                                                     ))}
                                                 </Select>
                                             </td>
-                                            <td>{o?.status}</td>
                                             <td>{o?.purchaser?.name}</td>
                                             <td>{o?.purchaser?.email}</td>
+                                            <td>{o?.purchaser?.phone}</td>
                                             <td>{moment(o?.createAt).fromNow()}</td>
                                             <td>{o?.payment?.success ? "Success" : "Failed"}</td>
                                             <td>{o?.products?.length}</td>
@@ -84,15 +85,16 @@ const AdminOrder = () => {
                                 </table>
                                 <div className="container">
                                     {o?.products.map((p, i) => (
-                                        <div key={i} className='row mb-2 p-2 card flex-row'>
-                                            <img style={{ padding: '2px', width: '7rem', marginTop: '10px', borderRadius: '10px' }}
+                                        <div key={i} className='d-flex mb-2 mt-2'>
+                                            <img style={{ padding: '1px', width: '10rem', marginTop: '2px', marginRight: '4px', borderRadius: '10px' }}
                                                 src={p.image}
                                                 className='card-img-top' alt={p.name} />
 
-                                            <div className='row-md-8'>
-                                                <p className='mb-2'><b>Name:</b> {p.name}</p>
-                                                <p className='mb-2'><b>Info:</b> {p.description.substring(0, 10)}...</p>
-                                                <p className='mb-2'><b>Price: </b>{p.price}</p>
+                                            <div className='mt-3'>
+                                                <p className='mb-1'><b>Name:</b> {p.name}</p>
+                                                <p className='mb-1'><b>Info:</b> {p.description.substring(0, 10)}...</p>
+                                                <p className='mb-1'><b>Price: </b>{p.price}</p>
+                                                <p className='mb-1'><b>Quantity: </b>{p.quantity}</p>
                                             </div>
                                         </div>
                                     ))}

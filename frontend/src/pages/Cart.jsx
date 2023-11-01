@@ -37,6 +37,7 @@ const AddToCart = () => {
       }
       return prod
     })
+
     setCart(updatedCart)
     localStorage.setItem('cart', JSON.stringify(updatedCart))
   }

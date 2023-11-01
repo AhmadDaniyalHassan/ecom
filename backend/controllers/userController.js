@@ -222,7 +222,7 @@ export const getAllOrdersController = async (req, res) => {
     const orders = await orderModel
       .find({})
       .populate("products")
-      .populate("purchaser", "name")
+      .populate("purchaser", "name email phone")
       .sort({ createdAt: "-1" });
     res.json(orders);
   } catch (error) {

@@ -8,11 +8,11 @@ import axios from 'axios'
 
 const AddToCart = () => {
   const [auth, setAuth] = useAuth()
-  const [cart, setCart] = useCart()
+  const [cart, increaseQuantity, decreaseQuantity, setCart] = useCart()
   const [clientToken, setClientToken] = useState('')
   const [instance, setInstance] = useState('')
   const [loading, setLoading] = useState(false)
-
+  const [quantity, setQuantity] = useState(1)
   const navigate = useNavigate()
   let shipping = 350
 
@@ -25,6 +25,28 @@ const AddToCart = () => {
       console.log(error)
     }
   }
+  const inQuantity = (id, newQuantity) => {
+    const updatedCart = cart.map((prod) => {
+      if (prod._id === id) {
+        return { ...prod, quantity: newQuantity };
+      }
+      return prod;
+    });
+  
+    setCart(updatedCart);
+    localStorage.setItem('cart', JSON.stringify(updatedCart));
+  };
+  const deQuantity = (id, newQuantity) => {
+    const updatedCart = cart.map((prod) => {
+      if (prod._id === id) {
+        return { ...prod, quantity: newQuantity };
+      }
+      return prod;
+    });
+  
+    setCart(updatedCart);
+    localStorage.setItem('cart', JSON.stringify(updatedCart));
+  };
 
   const updateQuantity = (id, newQuantity) => {
     if (newQuantity < 1) {
@@ -33,28 +55,19 @@ const AddToCart = () => {
 
     const updatedCart = cart.map(prod => {
       if (prod._id === id) {
-        return { ...prod, quantity: newQuantity }
+        return { ...prod, quantity: newQuantity };
       }
-      return prod
-    })
+      return prod;
+    });
 
-    setCart(updatedCart)
-    localStorage.setItem('cart', JSON.stringify(updatedCart))
-  }
-
-  const removeCartItem = (id) => {
-    try {
-
-      let myCart = [...cart]
-      let index = myCart.findIndex(prod => prod._id === id)
-      myCart.splice(index, 1)
-      setCart(myCart)
-      localStorage.setItem('cart', JSON.stringify(myCart))
-
-    } catch (error) {
-      console.log(error)
-    }
-  }
+    setCart(updatedCart);
+    localStorage.setItem('cart', JSON.stringify(updatedCart));
+  };
+  const removeFromCart = (itemId) => {
+    const updatedCart = cart.filter((item) => item._id !== itemId);
+    setCart(updatedCart);
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
+  };
 
   const getToken = async () => {
     try {
@@ -69,7 +82,7 @@ const AddToCart = () => {
     try {
       setLoading(true)
       const { nonce } = instance.requestPaymentMethod()
-      const { data } = await axios.post('http://localhost:8000/api/product/braintree/payment', { nonce, cart })
+      const { data } = await axios.post('http://localhost:8000/api/product/braintree/payment', { nonce, cart, quantity })
       setLoading(false)
       localStorage.removeItem('cart')
       setCart([])
@@ -97,26 +110,26 @@ const AddToCart = () => {
           </div>
           <div className='row '>
             <div className='col-md-7'>
-              {cart?.map(prod => (
-                <div key={prod._id} style={{ width: "70%", backgroundColor: '#b8b9ba', borderRadius: "20px" }} className='row mb-2 p-2 card flex-row'>
-
-                  <img style={{ padding: '2px', width: '14rem', marginTop: '2px', borderRadius: '10px' }}
-                    src={prod.image}
-                    className='card-img-top' alt={prod.name} />
-                  <div className='col-md-6'>
-                    <p className='mb-2'><b>Name:</b> {prod.name}</p>
-                    <p className='mb-2'><b>Info:</b> {prod.description.substring(0, 10)}...</p>
-                    <p className='mb-2'><b>Price: </b>{prod.price}</p>
-                    <div className='d-flex mb-2 mt-2 ' style={{ height: '40%', alignItems: 'center' }}>
-                      <button onClick={() => updateQuantity(prod._id, prod.quantity - 1)} className='btn btn btn-warning'>-</button>
-                      <p className='mx-2' style={{ marginTop: '10px' }}>{prod.quantity}</p>
-                      <button onClick={() => updateQuantity(prod._id, prod.quantity + 1)} className='btn btn btn-warning'>+</button>
-                      &nbsp;&nbsp;
-                      <button className='btn btn-danger' onClick={() => removeCartItem(prod._id)}>Remove</button>
+              {cart.length === 0 ? (
+                <p>Your cart is empty.</p>
+              ) : (
+                <ul>
+                  {cart.map((prod) => (
+                    <div key={prod._id} style={{ width: "70%", backgroundColor: '#b8b9ba', borderRadius: "20px" }} className='row mb-2 p-2 card flex-row'>
+                      <img style={{ padding: '2px', width: '14rem', marginTop: '2px', borderRadius: '10px' }}
+                        src={prod.image}
+                        className='card-img-top' alt={prod.name} />
+                      <p className='mb-2'><b>Name:</b> {prod.name}</p>
+                      <p className='mb-2'><b>Info:</b> {prod.description.substring(0, 10)}...</p>
+                      <p className='mb-2'><b>Price: </b>{prod.price}</p>
+                      <button onClick={() => inQuantity(prod._id, prod.quantity + 1)}>+</button>
+                      <span>{prod.quantity || 1}</span>
+                      <button onClick={() => deQuantity(prod._id, prod.quantity - 1)}>−</button>
+                      <button onClick={() => removeFromCart(prod._id)}>Remove</button>
                     </div>
-                  </div>
-                </div>
-              ))}
+                  ))}
+                </ul>
+              )}
             </div>
             <div className='col-md-5 text-center'>
               <h4>Cart Summary</h4>

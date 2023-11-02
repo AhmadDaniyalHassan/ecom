@@ -222,7 +222,7 @@ export const getAllOrdersController = async (req, res) => {
     const orders = await orderModel
       .find({})
       .populate("products")
-      .populate("purchaser", "name email phone")
+      .populate("purchaser", "name email phone quantity")
       .sort({ createdAt: "-1" });
     res.json(orders);
   } catch (error) {
@@ -288,5 +288,39 @@ export const getAdminUserController = async (req, res) => {
     res
       .status(500)
       .send({ success: false, error, message: "Error In Fetching Users" });
+  }
+};
+
+export const deleteUserController = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const user = await userModel.findByIdAndDelete(userId);
+    res.status(200).send({
+      success: true,
+      message: "User Deleted Successfully",
+      user,
+    });
+  } catch (error) {
+    console.log(error);
+    res
+      .status(500)
+      .send({ success: false, error, message: "Error In Deleting Users" });
+  }
+};
+
+export const deleteOrderController = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const order = await orderModel.findByIdAndDelete(orderId);
+    res.status(200).send({
+      success: true,
+      message: "Order Deleted Successfully",
+      order,
+    });
+  } catch (error) {
+    console.log(error);
+    res
+      .status(500)
+      .send({ success: false, error, message: "Error In Deleting Orders" });
   }
 };

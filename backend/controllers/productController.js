@@ -65,7 +65,7 @@ export const brainTreePaymentsController = async (req, res) => {
 
 export const createProductController = async (req, res) => {
   try {
-    const { name, description, price, category, in_stock, quantity } = req.body;
+    const { name, description, price, category, in_stock } = req.body;
 
     const image = [];
 
@@ -88,11 +88,7 @@ export const createProductController = async (req, res) => {
           success: false,
           message: "Product in Stock status field Required",
         });
-      case !quantity:
-        return res.status(400).send({
-          success: false,
-          message: "Quantity Feild is Required",
-        });
+
       case !category:
         return res
           .status(400)
@@ -112,7 +108,6 @@ export const createProductController = async (req, res) => {
       price,
       category,
       in_stock,
-      quantity,
       slug: slugify(name),
       image: image,
     });
@@ -133,7 +128,7 @@ export const createProductController = async (req, res) => {
 //update
 export const updateProductController = async (req, res) => {
   try {
-    const { name, description, price, category, in_stock, quantity } = req.body;
+    const { name, description, price, category, in_stock } = req.body;
     const { pid } = req.params;
 
     const image = [];
@@ -152,7 +147,6 @@ export const updateProductController = async (req, res) => {
         description,
         price,
         category,
-        quantity,
         in_stock,
         slug: slugify(name),
         image: image,

@@ -26,6 +26,7 @@ import CreateCategory from "./pages/Admin/CreateCategory.jsx";
 import About from './pages/About.jsx';
 import AdminOrder from './pages/Admin/AdminOrder.jsx';
 import Misc from './pages/Admin/Misc.jsx';
+
 // import Misc from './pages/misc.jsx';
 
 function App() {

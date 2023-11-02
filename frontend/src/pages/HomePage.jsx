@@ -16,9 +16,10 @@ const HomePage = () => {
     const [radio, setRadio] = useState([])
     const [total, setTotal] = useState(0)
     const [page, setPage] = useState(1)
-    const [cart, setCart] = useCart()
+    const [cart, increaseQuantity, decreaseQuantity, setCart] = useCart()
     const [wishlist, setWishlist] = useWishlist()
     const [loading, setLoading] = useState(false)
+
 
     const getAllProduct = async () => {
         try {
@@ -74,6 +75,20 @@ const HomePage = () => {
         }
     }
 
+    const handleAddToCart = (productData) => {
+        const existingProduct = cart.find(item => item._id === productData._id)
+
+        if (existingProduct) {
+            // Remove from cart if already added
+            const updatedCart = cart.filter(item => item._id !== productData._id)
+            setCart(updatedCart)
+            localStorage.setItem('cart', JSON.stringify(updatedCart))
+        } else {
+            // Add to cart if not already added
+            setCart([...cart, productData])
+            localStorage.setItem('cart', JSON.stringify([...cart, productData]))
+        }
+    }
 
     const handleFilter = (value, id) => {
 
@@ -152,27 +167,27 @@ const HomePage = () => {
                     <h4 className='text-center'>Home</h4>
                     <div style={{ justifyContent: 'center' }} className='d-flex flex-wrap'>
                         {product?.map((pdata) => (
-                            <div className='card m-2 ' style={{ width: "15.0rem", height: '25rem', }} key={pdata._id}>
-                                <img style={{ height: "10rem", width: "15.0rem", padding: '4px', borderRadius: 10, objectFit: "cover" }} src={pdata.image} className='card-img-top' alt={pdata.name} />
+                            <div className='card m-2 ' style={{ width: "17rem", height: '24.5rem', }} key={pdata._id}>
+                                <img style={{ height: "10rem", width: "15.0rem", padding: '4px', marginLeft: '6px', borderRadius: 10, objectFit: "cover" }} src={pdata.image} className='card-img-top' alt={pdata.name} />
                                 <div className='card-body p-0'>
-                                    <h5 className='card-title mb-1'><b>Name: </b>{pdata?.name}</h5>
-                                    <p className='card-text mb-1'><b>Info: </b>{pdata?.description.substring(0, 25)}...</p>
-                                    <p className='card-text mb-1'><b>Price: </b> {pdata?.price}</p>
-                                    <p className='card-text mb-1'><b>Category: </b> {pdata?.category?.name}</p>
-                                    <p className='card-text mb-1'><b>Quantity: </b> {pdata?.quantity}</p>
-
-                                    <img style={{ cursor: 'pointer', marginBottom: '5px'  }} onClick={() => {
+                                    <h5 className='card-title mb-1' style={{ marginLeft: "9px" }}><b>Name: </b>{pdata?.name}</h5>
+                                    <p className='card-text mb-1' style={{ marginLeft: "9px" }}><b>Info: </b>{pdata?.description.substring(0, 25)}...</p>
+                                    <p className='card-text mb-1' style={{ marginLeft: "9px" }}><b>Price: </b> {pdata?.price}</p>
+                                    <p className='card-text mb-1' style={{ marginLeft: "9px" }}><b>Category: </b> {pdata?.category?.name}</p>
+                                    <img style={{ cursor: 'pointer', marginBottom: '5px', marginTop: '9px', marginLeft: '9px' }} onClick={() => {
                                         setWishlist([...wishlist, pdata]);
                                         localStorage.setItem('wishlist', JSON.stringify([...wishlist, pdata]))
-                                    }} src={wishlists} alt="wishlist" width="20px" height="20px" />
+                                    }} src={wishlists} alt="wishlist" width="24px" height="24px" />
 
                                 </div>
-                                <div style={{ height: '4.5rem', width: '100%' }} className='card-footer d-flex flex-direction-row gap-2 p-3'>
-                                    <button onClick={() => {
-                                        setCart([...cart, pdata]);
-                                        localStorage.setItem('cart', JSON.stringify([...cart, pdata]))
-                                    }} className='btn btn-secondary' >Add to Cart</button>
-                                    <Link to={`/single-product/${pdata.slug}`} className='btn btn-primary'>Details</Link>
+                                <div style={{ height: '4.5rem', width: '100%' }} className='card-footer d-flex flex-direction-row justify-content-around gap-2 p-3'>
+                                    <button
+                                        onClick={() => handleAddToCart(pdata)}
+                                        className='btn btn-outline-dark mt-auto' style={{ fontSize: "85%", overflow: 'hidden' }}
+                                    >
+                                        {cart.find(item => item._id === pdata._id) ? "Remove from Cart" : "Add to Cart"}
+                                    </button>
+                                    <Link to={`/single-product/${pdata.slug}`} className='btn btn-primary mt-auto ' style={{ fontSize: "85%", overflow: 'hidden', display: 'inline-block' }}>Details</Link>
                                 </div>
                             </div>
                         ))}

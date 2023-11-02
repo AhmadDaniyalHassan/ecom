@@ -2,6 +2,7 @@ import React from 'react'
 import Layout from '../../components/layout/Layout'
 import { useNavigate } from 'react-router-dom'
 import AdminMenu from '../../components/layout/AdminMenu'
+import userProfile from '../user/UserProfile'
 const Misc = () => {
     const navigate = useNavigate()
 
@@ -16,7 +17,6 @@ const Misc = () => {
                         </div>
                     </div>
                     
-
                 </div>
             </Layout>
         </>

@@ -95,7 +95,7 @@ const Product = () => {
     return (
         <Layout title="Product-Single - Ecom" >
             <button style={{ marginTop: 15, marginLeft: 15 }} className='btn btn-primary' onClick={() => navigate(-1)}>Go Back</button>
-   
+
             <section className="py-2">
                 <div className="container px-4 px-lg-5 my-5">
                     <div className="row gx-4 gx-lg-5 align-items-start">
@@ -145,7 +145,7 @@ const Product = () => {
             </div>
             <h4 className='text-center mt-2 mb-1'>Our Users Reviews</h4>
             {loading || reviews.length === 0 ? (
-                (<p>No Reviews Found</p>)
+                (<p className='text-center h5'>No Reviews Found</p>)
             ) : (
                 <div className='d-flex flex-row flex-wrap justify-content-center'>
                     {reviews.map((r, i) => (

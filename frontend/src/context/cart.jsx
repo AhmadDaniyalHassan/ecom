@@ -16,25 +16,31 @@ const CartProvider = ({ children }) => {
     const increaseQuantity = (itemId) => {
         const updatedCart = cart.map((item) => {
             if (item._id === itemId) {
-                return { ...item, quantity: item.quantity + 1 };
+                const updatedItem = { ...item, quantity: item.quantity + 1 };
+                return {
+                    ...updatedItem,
+                    total: updatedItem.price * updatedItem.quantity,
+                };
             }
             return item;
         });
-        setCart(updatedCart);
-        localStorage.setItem('cart', JSON.stringify(updatedCart));
-    }
-
+        updateCart(updatedCart);
+    };
+    
     const decreaseQuantity = (itemId) => {
         const updatedCart = cart.map((item) => {
             if (item._id === itemId) {
                 if (item.quantity > 1) {
-                    return { ...item, quantity: item.quantity - 1 };
+                    const updatedItem = { ...item, quantity: item.quantity - 1 };
+                    return {
+                        ...updatedItem,
+                        total: updatedItem.price * updatedItem.quantity,
+                    };
                 }
             }
             return item;
         });
-        setCart(updatedCart);
-        localStorage.setItem("cart", JSON.stringify(updatedCart));
+        updateCart(updatedCart);
     };
     return (
         <CartContext.Provider value={[cart, increaseQuantity, decreaseQuantity, setCart]}>

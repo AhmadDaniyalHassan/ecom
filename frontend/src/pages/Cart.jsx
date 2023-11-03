@@ -26,24 +26,35 @@ const AddToCart = () => {
     }
   }
   const inQuantity = (id, newQuantity) => {
+    if (newQuantity < 1) {
+      newQuantity = 1;
+    }
+   
     const updatedCart = cart.map((prod) => {
       if (prod._id === id) {
-        return { ...prod, quantity: newQuantity };
+        // Calculate the new total price based on the updated quantity
+        const newTotal = prod.price * newQuantity;
+        return { ...prod, quantity: newQuantity, total: newTotal };
       }
       return prod;
     });
-  
+
     setCart(updatedCart);
     localStorage.setItem('cart', JSON.stringify(updatedCart));
   };
   const deQuantity = (id, newQuantity) => {
+    if (newQuantity < 1) {
+      newQuantity = 1;
+    }
     const updatedCart = cart.map((prod) => {
       if (prod._id === id) {
-        return { ...prod, quantity: newQuantity };
+        // Calculate the new total price based on the updated quantity
+        const newTotal = prod.price * newQuantity;
+        return { ...prod, quantity: newQuantity, total: newTotal };
       }
       return prod;
     });
-  
+
     setCart(updatedCart);
     localStorage.setItem('cart', JSON.stringify(updatedCart));
   };
@@ -121,9 +132,9 @@ const AddToCart = () => {
                         className='card-img-top' alt={prod.name} />
                       <p className='mb-2'><b>Name:</b> {prod.name}</p>
                       <p className='mb-2'><b>Info:</b> {prod.description.substring(0, 10)}...</p>
-                      <p className='mb-2'><b>Price: </b>{prod.price}</p>
+                      <p className='mb-2'><b>Price: </b>{prod.total || Number(prod.price * prod.quantity)}</p>
                       <button onClick={() => inQuantity(prod._id, prod.quantity + 1)}>+</button>
-                      <span>{prod.quantity || 1}</span>
+                      <span>{  }</span>
                       <button onClick={() => deQuantity(prod._id, prod.quantity - 1)}>−</button>
                       <button onClick={() => removeFromCart(prod._id)}>Remove</button>
                     </div>

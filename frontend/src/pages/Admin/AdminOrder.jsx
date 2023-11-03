@@ -85,16 +85,16 @@ const AdminOrder = () => {
                                 </table>
                                 <div className="container">
                                     {o?.products.map((p, i) => (
-                                        <div key={i} className='d-flex mb-2 mt-2'>
+                                        <div  className='d-flex mb-2 mt-2'>
                                             <img style={{ padding: '1px', width: '10rem', marginTop: '2px', marginRight: '4px', borderRadius: '10px' }}
-                                                src={p.image}
-                                                className='card-img-top' alt={p.name} />
+                                              
+                                                className='card-img-top'  />
 
                                             <div className='mt-3'>
-                                                <p className='mb-1'><b>Name:</b> {p.name}</p>
-                                                <p className='mb-1'><b>Info:</b> {p.description.substring(0, 10)}...</p>
-                                                <p className='mb-1'><b>Price: </b>{p.price}</p>
-                                                <p className='mb-1'><b>Quantity: </b>{p.quantity}</p>
+                                                <p className='mb-1'><b>Name:</b> {console.log(p)}</p>
+                                                <p className='mb-1'><b>Info:</b> {}...</p>
+                                                <p className='mb-1'><b>Price: </b>{}</p>
+                                                <p className='mb-1'><b>Quantity: </b>{}</p>
                                             </div>
                                         </div>
                                     ))}

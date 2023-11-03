@@ -33,10 +33,36 @@ export const brainTreeTokenController = async (req, res) => {
 export const brainTreePaymentsController = async (req, res) => {
   try {
     const { cart, nonce } = req.body;
-    let total = 0;
-    cart.map((i) => {
-      total += i.price;
+    let total = 350;
+    const productsToUpdate = []; // To track products that need quantity updates
+    let quantityError = false; // Flag to check if any product has a zero quantity
+
+    // Calculate the total and update the productsToUpdate array
+    cart.map((orderItem) => {
+      if (orderItem.quantity <= 0) {
+        // Handle the case where quantity is zero
+        quantityError = true;
+        return;
+      }
+      if (quantityError) {
+        // Respond with an error message if any product has zero quantity
+        res
+          .status(400)
+          .json({ error: "One or more products have a quantity of zero." });
+        return;
+      }
+
+      total += orderItem.price * orderItem.quantity;
+
+      productsToUpdate.push({
+        _id: orderItem._id,
+        quantity: orderItem.quantity,
+        name: product.name,
+        image:product.image
+      });
     });
+
+    // Create a Braintree transaction
     let newTransaction = gateway.transaction.sale(
       {
         amount: total,
@@ -45,13 +71,30 @@ export const brainTreePaymentsController = async (req, res) => {
           submitForSettlement: true,
         },
       },
-      function (error, result) {
+      async function (error, result) {
         if (result) {
+          // Update product quantities in the Product schema
+          try {
+            for (const productUpdate of productsToUpdate) {
+              const product = await productModel.findById(productUpdate._id);
+              if (product) {
+                // Decrease the product quantity based on the order quantity
+                product.quantity -= productUpdate.quantity;
+                await product.save();
+              }
+            }
+          } catch (err) {
+            console.error(err);
+          }
+
+          // Save the order with updated quantities
           const order = new orderModel({
             products: cart,
+            total: total, // Set the total outside of the payment
             payment: result,
             purchaser: req.user._id,
           }).save();
+
           res.json({ ok: true });
         } else {
           res.status(500).send(error);
@@ -65,7 +108,7 @@ export const brainTreePaymentsController = async (req, res) => {
 
 export const createProductController = async (req, res) => {
   try {
-    const { name, description, price, category, in_stock } = req.body;
+    const { name, description, price, quantity, category, in_stock } = req.body;
 
     const image = [];
 
@@ -74,6 +117,10 @@ export const createProductController = async (req, res) => {
         return res
           .status(400)
           .send({ success: false, message: "Product Name field Required" });
+      case !quantity:
+        return res
+          .status(400)
+          .send({ success: false, message: "Product Quantity field Required" });
       case !description:
         return res.status(400).send({
           success: false,
@@ -107,6 +154,7 @@ export const createProductController = async (req, res) => {
       description,
       price,
       category,
+      quantity,
       in_stock,
       slug: slugify(name),
       image: image,
@@ -128,7 +176,7 @@ export const createProductController = async (req, res) => {
 //update
 export const updateProductController = async (req, res) => {
   try {
-    const { name, description, price, category, in_stock } = req.body;
+    const { name, description, price, quantity, category, in_stock } = req.body;
     const { pid } = req.params;
 
     const image = [];
@@ -147,6 +195,7 @@ export const updateProductController = async (req, res) => {
         description,
         price,
         category,
+        quantity,
         in_stock,
         slug: slugify(name),
         image: image,

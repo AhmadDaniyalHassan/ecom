@@ -17,6 +17,7 @@ const CreateProduct = () => {
     const [price, setPrice] = useState('')
     const [inStock, setIn_Stock] = useState(Boolean)
     const [category, setCategory] = useState('')
+    const [quantity, setQuantity] = useState('')
 
 
     const getAllCategory = async () => {
@@ -45,6 +46,7 @@ const CreateProduct = () => {
             formData.append('price', price)
             formData.append('image', image)
             formData.append('category', category)
+            formData.append('quantity', quantity)
             formData.append('in_stock', inStock)
 
 
@@ -102,6 +104,9 @@ const CreateProduct = () => {
                             </div>
                             <div className='mb-3'>
                                 <input type='text' alt='decription' className='form-control' placeholder='Enter Product Description' value={description} onChange={(e) => setDescription(e.target.value)} />
+                            </div>
+                            <div className='mb-3'>
+                                <input type='text' alt='quantity' className='form-control' placeholder='Enter Product Description' value={quantity} onChange={(e) => setQuantity(e.target.value)} />
                             </div>
                             <div className='mb-3'>
                                 <input type='number' alt='price' className='form-control' placeholder='Enter Product Price' value={price} onChange={(e) => setPrice(e.target.value)} />

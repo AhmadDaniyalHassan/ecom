@@ -206,7 +206,10 @@ export const getOrdersController = async (req, res) => {
   try {
     const orders = await orderModel
       .find({ purchaser: req.user._id })
-      .populate("products")
+      .populate({
+        path: "products.product",
+        select: "name image", // Select the name and image fields from the product
+      })
       .populate("purchaser", "name");
     res.json(orders);
   } catch (error) {

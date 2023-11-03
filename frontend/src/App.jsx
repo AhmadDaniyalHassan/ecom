@@ -4,7 +4,7 @@ import Search from './pages/Search.jsx';
 import Login from "./pages/Auth/Login.jsx";
 import CheckOut from "./pages/CheckOut.jsx";
 import HomePage from "./pages/HomePage.jsx";
-import Wishlist from './pages/Wishlist.jsx';
+// import Wishlist from './pages/Wishlist.jsx';
 import SignUp from "./pages/Auth/Signup.jsx";
 import Categories from './pages/Categories.jsx';
 import { Routes, Route } from "react-router-dom";
@@ -49,7 +49,7 @@ function App() {
 
         <Route path="/checkout" element={<CheckOut />} />
         <Route path="/cart" element={<Cart />} />
-        <Route path="/wishlist" element={<Wishlist />} />
+        {/* <Route path="/wishlist" element={<Wishlist />} /> */}
 
         <Route path="/single-product/:slug" element={<SingleProduct />} />
 

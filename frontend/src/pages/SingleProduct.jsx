@@ -13,7 +13,7 @@ import toast from 'react-hot-toast'
 const Product = () => {
 
     const [product, setProduct] = useState({})
-    const [cart, setCart] = useCart()
+    const [cart, increaseQuantity, decreaseQuantity, setCart] = useCart()
     const [relatedProduct, setRelatedProduct] = useState([])
     const params = useParams()
     const [reviews, setReviews] = useState([]);
@@ -76,6 +76,21 @@ const Product = () => {
             console.log(error)
         }
     }
+    const handleAddToCart = (productData) => {
+        const existingProduct = cart.find(item => item._id === productData._id)
+
+        if (existingProduct) {
+            // Remove from cart if already added
+            const updatedCart = cart.filter(item => item._id !== productData._id)
+            setCart(updatedCart)
+            localStorage.setItem('cart', JSON.stringify(updatedCart))
+        } else {
+            // Add to cart if not already added
+            setCart([...cart, productData])
+            localStorage.setItem('cart', JSON.stringify([...cart, productData]))
+        }
+    }
+
 
 
     const getSimilarProduct = async (pid, cid) => {
@@ -110,12 +125,11 @@ const Product = () => {
                             </div>
 
                             <div className="d-flex">
-                                <button className="btn btn-outline-dark flex-shrink-0" type="button" onClick={() => {
-                                    setCart([...cart, product]);
-                                    localStorage.setItem('cart', JSON.stringify([...cart, product]))
-                                }}>
-                                    <i className="bi-cart-fill me-1" />
-                                    Add to cart
+                                <button
+                                    onClick={() => handleAddToCart(product)}
+                                    className='btn btn-outline-dark mt-auto' style={{ fontSize: "85%", overflow: 'hidden' }}
+                                >
+                                    {cart.find(item => item._id === product._id) ? "Remove from Cart" : "Add to Cart"}
                                 </button>
                             </div>
                         </div>

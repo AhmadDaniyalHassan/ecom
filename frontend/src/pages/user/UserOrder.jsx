@@ -41,7 +41,7 @@ const Order = () => {
                     <div className='col-md-2 mt-2'>
                         <UserMenu />
                     </div>
-                    <div className='col-md-10'>
+                    <div className='col-md-9'>
                         <h2>All Orders</h2>
                         {orders.map((order, i) => (
                             <div key={i} className='border shadow m-2'>
@@ -52,8 +52,6 @@ const Order = () => {
                                             <th scope='col'>Status</th>
                                             <th scope='col'>Buyer</th>
                                             <th scope='col'>Email</th>
-                                            <th scope='col'>Phone</th>
-                                            <th scope='col'>Address</th>
                                             <th scope='col'>Order Date</th>
                                             <th scope='col'>Payment Status</th>
                                             <th scope='col'>Total Products</th>
@@ -66,8 +64,6 @@ const Order = () => {
                                             <td>{order?.status}</td>
                                             <td>{order?.purchaser?.name}</td>
                                             <td>{order?.purchaser?.email}</td>
-                                            <td>{order?.purchaser?.phone}</td>
-                                            <td>{order?.purchaser?.address}</td>
                                             <td>{moment(order?.createdAt).format('MMMM Do YYYY, h:mm a')}</td>
                                             <td>{order?.payment?.success ? 'Success' : 'Failed'}</td>
                                             <td>{order?.products.length}</td>
@@ -78,11 +74,11 @@ const Order = () => {
                                 <h3 className='mx-4'>Products</h3>
                                 {order.products.map((prod, k) => (
                                     <div className='flex d-flex' key={k}>
-                                        <img style={{ padding: '2px', width: '14rem', marginTop: '2px', borderRadius: '10px' }}
+                                        <img style={{ padding: '2px', width: '12.5rem', height: '11.5rem', marginTop: '2px', borderRadius: '10px' }}
                                             src={prod.image} className='card-img-top mx-4 my-2' alt={prod.name} />
                                         <div>
                                             <p className='m-2'><b>Name: </b> {prod.name}</p>
-                                            <p className='m-2'><b>Quantity: </b> {prod.quantity}</p>
+                                            <p className='m-2'><b>Quantity Of Each Order Product: </b> {prod.quantity}</p>
                                             <p className='m-2'><b>Price Without Shipment: </b> {prod.total || (Number(prod.price) * prod.quantity)}</p>
                                         </div>
                                     </div>

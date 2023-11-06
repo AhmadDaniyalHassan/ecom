@@ -11,13 +11,12 @@ import StarRatings from 'react-star-ratings';
 
 const Product = () => {
 
-    const [product, setProduct] = useState({})
+    const [product, setProduct] = useState([])
     const [cart, increaseQuantity, decreaseQuantity, setCart] = useCart()
     const [relatedProduct, setRelatedProduct] = useState([])
     const params = useParams()
     const [reviews, setReviews] = useState([]);
     const [page, setPage] = useState(1);
-
     const [loading, setLoading] = useState(true);
     const [rating, setRating] = useState(0);
     const [comment, setComment] = useState('');
@@ -44,6 +43,11 @@ const Product = () => {
         setPage((prevPage) => prevPage + 1);
     };
 
+    const removeFromCart = () => {
+        const updatedCart = cart.filter((item) => item._id !== product._id);
+        setCart(updatedCart);
+        localStorage.setItem("cart", JSON.stringify(updatedCart));
+    };
 
     const handleSubmitReview = async (e) => {
         e.preventDefault();
@@ -59,10 +63,26 @@ const Product = () => {
             // Clear the input fields
             setRating(0);
             setComment('');
+            navigate(0)
         } catch (error) {
             console.error('Error submitting review:', error);
         }
     };
+
+    const calculateAverageRating = () => {
+        if (reviews.length === 0) {
+            return 0;
+        }
+
+        let totalRating = 0;
+        for (const review of reviews) {
+            totalRating += review.rating;
+        }
+        return totalRating / reviews.length;
+    };
+    const averageRating = calculateAverageRating();
+
+
 
     const getAllProduct = async () => {
         try {
@@ -88,13 +108,6 @@ const Product = () => {
             localStorage.setItem('cart', JSON.stringify([...cart, newProduct]));
         }
     };
-    const inQuantity = (id, newQuantity) => {
-        if (newQuantity < 1) {
-            newQuantity = 1;
-        }
-    }
-
-
 
 
     const getSimilarProduct = async (pid, cid) => {
@@ -123,16 +136,31 @@ const Product = () => {
                             <div className="lead mb-1">Category: {product?.category?.name}</div>
                             <p className="lead mb-1">Description: {product?.description}</p>
                             <p className="lead mb-1">Quantity: {product?.quantity}</p>
+                            <StarRatings
+                                rating={averageRating}
+                                starRatedColor="gold"
+                                starEmptyColor="lightgray"
+                                starDimension="20px"
+                                starSpacing="2px"
+                            />
                             <div className="fs-5 mb-1">
                                 <span>Price: {product?.price}&nbsp;&nbsp;</span>
                             </div>
                             <div className="d-flex">
-                                <button
-                                    onClick={() => handleAddToCart(product)}
-                                    className='btn btn-outline-dark mt-auto' style={{ fontSize: "85%", overflow: 'hidden' }}
-                                >
-                                    {cart.find(item => item._id === product._id) ? "Remove from Cart" : "Add to Cart"}
-                                </button>
+                                {cart.find(item => item._id === product._id) ? (
+                                    // Render the "Remove" button if the condition is false
+
+                                    <button style={{ fontSize: "85%", overflow: 'hidden' }} className='btn btn-outline-dark mt-auto' onClick={() => removeFromCart(product)}>Remove From Cart</button>
+                                ) : (
+                                    // Render the "Add To Cart" button if the condition is true
+                                    <button
+                                        onClick={() => handleAddToCart(product)}
+                                        className='btn btn-outline-dark mt-auto'
+                                        style={{ fontSize: "85%", overflow: 'hidden' }}
+                                    >
+                                        {cart.find(item => item._id === product._id)} Add To Cart
+                                    </button>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -189,29 +217,40 @@ const Product = () => {
             <section className="py-2 bg-light">
                 <div className="container px-2 px-lg-5 mt-3">
                     <h2 className="fw-bolder mb-4">Related products</h2>
-                    <div className="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 ">
+                    <div className="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 " >
                         {relatedProduct.map((p, i) => (
-                            <div className="col mb-3" key={i}>
-                                <div className="card h-100 w-auto">
+                            <div className="col mb-3 flex d-flex justify-content-center" key={i}>
+                                <div className="card w-auto"  >
                                     {/* Product image*/}
-                                    <img className="card-img-top" src={p?.image} alt={p?.name} />
-                                    <div className="card-body p-4">
+                                    <img style={{ height: "10rem", width: "13.0rem", padding: '4px', marginLeft: '6px', borderRadius: 10, objectFit: "cover", }} src={p?.image} alt={p?.name} />
+                                    <div className="card-body p-3">
                                         <div className="text-center">
-                                            <b>Category: </b>{p?.category?.name}
+
+                                            <b>Name: </b>{p?.name}<br></br>
+                                            <b>Category: </b>{p?.category?.name}<br></br>
                                             {/* Product name*/}
-                                            <h5 className="text-center">Name: {p?.name}</h5>
                                             {/* Product price*/}
-                                            <b>Price: </b> {p?.price}
+                                            <b>Price: </b> {p?.price}<br></br>
                                         </div>
                                     </div>
                                     {/* Product actions*/}
-                                    <div className="card-footer p-4 ml-2 pt-0 border-top-0 bg-transparent ">
-                                        <div className="text-center"><span onClick={() => {
-                                            setCart([...cart, pdata]);
-                                            localStorage.setItem('cart', JSON.stringify([...cart, pdata]))
-                                        }} className="btn btn-outline-dark mt-auto " >Add To Cart</span>
-                                            &nbsp;&nbsp;
-                                            <Link to={`/single-product/${p.slug}`} className='btn btn-secondary btn-small-margin' >Details</Link>
+                                    <div className="card-footer p-4 ml-2 pt-0 mx-3 border-top-0 bg-transparent ">
+                                        <div className="text-center">
+                                            {cart.find(item => item._id === product._id) ? (
+                                                // Render the "Add To Cart" button if the condition is true
+
+                                                <button style={{ fontSize: "85%", overflow: 'hidden', marginRight: '6px' }} className='btn btn-outline-dark mt-auto' onClick={() => removeFromCart(product)}>Remove From Cart</button>
+                                            ) : (
+                                                // Render the "Remove" button if the condition is false
+                                                <button
+                                                    onClick={() => handleAddToCart(product)}
+                                                    className='btn btn-outline-dark mt-auto'
+                                                    style={{ fontSize: "85%", overflow: 'hidden', marginRight: '8px' }}
+                                                >
+                                                    {cart.find(item => item._id === product._id)} Add To Cart
+                                                </button>
+                                            )}
+                                            <Link to={`/single-product/${p.slug}`} className='btn btn-primary mt-auto ' style={{ fontSize: "85%", overflow: 'hidden', display: 'inline-block' }}>Details</Link>
                                         </div>
                                     </div>
                                 </div>

@@ -7,19 +7,20 @@ import { useCart } from '../context/cart'
 import { useWishlist } from '../context/wishlist'
 import wishlists from '../assets/wishlists.svg'
 import { Prices } from '../components/Prices'
+import StarRatings from 'react-star-ratings'
 
 const HomePage = () => {
     // const dispatch = useDispatch()
-    const [product, setProduct] = useState([])
-    const [category, setCategory] = useState([])
-    const [checked, setChecked] = useState([])
-    const [radio, setRadio] = useState([])
-    const [total, setTotal] = useState(0)
-    const [page, setPage] = useState(1)
-    const [cart, increaseQuantity, decreaseQuantity, setCart] = useCart()
-    const [wishlist, setWishlist] = useWishlist()
-    const [loading, setLoading] = useState(false)
-
+    const [product, setProduct] = useState([]);
+    const [category, setCategory] = useState([]);
+    const [checked, setChecked] = useState([]);
+    const [radio, setRadio] = useState([]);
+    const [total, setTotal] = useState(0);
+    const [page, setPage] = useState(1);
+    const [cart, increaseQuantity, decreaseQuantity, setCart] = useCart();
+    const [wishlist, setWishlist] = useWishlist();
+    const [loading, setLoading] = useState(false);
+    const [review, setReview] = useState([]);
 
     const getAllProduct = async () => {
         try {
@@ -75,6 +76,35 @@ const HomePage = () => {
         }
     }
 
+    const getAllRating = async () => {
+        try {
+            const { data } = await axios.get('http://localhost:8000/api/product//get-product-review/')
+            if (data?.success) {
+                setReview(data.reviews)
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const renderStarRating = (rating) => {
+        return (
+            <StarRatings
+                rating={rating}
+                starRatedColor="gold"
+                starEmptyColor="lightgray"
+                starDimension="20px"
+                starSpacing="2px"
+            />
+        );
+    };
+
+    const removeFromCart = (itemId) => {
+        const updatedCart = cart.filter((item) => item._id !== itemId);
+        setCart(updatedCart);
+        localStorage.setItem("cart", JSON.stringify(updatedCart));
+    };
+
     const handleAddToCart = (product) => {
         const existingProduct = cart.find((item) => item._id === product._id);
 
@@ -88,11 +118,6 @@ const HomePage = () => {
             localStorage.setItem('cart', JSON.stringify([...cart, newProduct]));
         }
     };
-    const inQuantity = (id, newQuantity) => {
-        if (newQuantity < 1) {
-            newQuantity = 1;
-        }
-    }
 
 
     const handleFilter = (value, id) => {
@@ -108,7 +133,7 @@ const HomePage = () => {
 
 
     useEffect(() => {
-        if (!checked.length || !radio.length) getAllProduct();
+        if (!checked.length || !radio.length) getAllProduct(); getAllRating();
         //eslint-disable-next-line
     }, [checked.length, radio.length])
 
@@ -172,13 +197,17 @@ const HomePage = () => {
                     <h4 className='text-center'>Home</h4>
                     <div style={{ justifyContent: 'center' }} className='d-flex flex-wrap'>
                         {product?.map((pdata) => (
-                            <div className='card m-2 ' style={{ width: "17rem", height: '24.5rem', }} key={pdata._id}>
+                            <div className='card m-2 ' style={{ width: "17rem", height: '24.5rem' }} key={pdata._id}>
                                 <img style={{ height: "10rem", width: "15.0rem", padding: '4px', marginLeft: '6px', borderRadius: 10, objectFit: "cover" }} src={pdata.image} className='card-img-top' alt={pdata.name} />
                                 <div className='card-body p-0'>
+                                    {review.map((rev, index) => (
+                                        <p key={index}>Rating: {renderStarRating(rev.rating)}</p>
+                                    ))}
                                     <h5 className='card-title mb-1' style={{ marginLeft: "9px" }}><b>Name: </b>{pdata?.name}</h5>
                                     <p className='card-text mb-1' style={{ marginLeft: "9px" }}><b>Info: </b>{pdata?.description.substring(0, 25)}...</p>
                                     <p className='card-text mb-1' style={{ marginLeft: "9px" }}><b>Price: </b> {pdata?.price}</p>
                                     <p className='card-text mb-1' style={{ marginLeft: "9px" }}><b>Category: </b> {pdata?.category?.name}</p>
+
                                     <img style={{ cursor: 'pointer', marginBottom: '5px', marginTop: '9px', marginLeft: '9px' }} onClick={() => {
                                         setWishlist([...wishlist, pdata]);
                                         localStorage.setItem('wishlist', JSON.stringify([...wishlist, pdata]))
@@ -186,12 +215,20 @@ const HomePage = () => {
 
                                 </div>
                                 <div style={{ height: '4.5rem', width: '100%' }} className='card-footer d-flex flex-direction-row justify-content-around gap-2 p-3'>
-                                    <button
-                                        onClick={() => handleAddToCart(pdata)}
-                                        className='btn btn-outline-dark mt-auto' style={{ fontSize: "85%", overflow: 'hidden' }}
-                                    >
-                                        {cart.find(item => item._id === pdata._id) ? "Remove from Cart" : "Add to Cart"}
-                                    </button>
+                                    {cart.find(item => item._id === pdata._id) ? (
+                                        // Render the "Add To Cart" button if the condition is true
+
+                                        <button style={{ fontSize: "85%", overflow: 'hidden' }} className='btn btn-outline-dark mt-auto' onClick={() => removeFromCart(pdata._id)}>Remove From Cart</button>
+                                    ) : (
+                                        // Render the "Remove" button if the condition is false
+                                        <button
+                                            onClick={() => handleAddToCart(pdata)}
+                                            className='btn btn-outline-dark mt-auto'
+                                            style={{ fontSize: "85%", overflow: 'hidden' }}
+                                        >
+                                            {cart.find(item => item._id === pdata._id)} Add To Cart
+                                        </button>
+                                    )}
                                     <Link to={`/single-product/${pdata.slug}`} className='btn btn-primary mt-auto ' style={{ fontSize: "85%", overflow: 'hidden', display: 'inline-block' }}>Details</Link>
                                 </div>
                             </div>

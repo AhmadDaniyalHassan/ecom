@@ -108,7 +108,7 @@ export const brainTreePaymentsController = async (req, res) => {
 
 export const createProductController = async (req, res) => {
   try {
-    const { name, description, price, quantity, category, in_stock } = req.body;
+    const { name, description, price, category, in_stock } = req.body;
 
     const image = [];
 
@@ -117,10 +117,7 @@ export const createProductController = async (req, res) => {
         return res
           .status(400)
           .send({ success: false, message: "Product Name field Required" });
-      case !quantity:
-        return res
-          .status(400)
-          .send({ success: false, message: "Product Quantity field Required" });
+
       case !description:
         return res.status(400).send({
           success: false,
@@ -154,7 +151,6 @@ export const createProductController = async (req, res) => {
       description,
       price,
       category,
-      quantity,
       in_stock,
       slug: slugify(name),
       image: image,
@@ -176,7 +172,7 @@ export const createProductController = async (req, res) => {
 //update
 export const updateProductController = async (req, res) => {
   try {
-    const { name, description, price, quantity, category, in_stock } = req.body;
+    const { name, description, price, category, in_stock } = req.body;
     const { pid } = req.params;
 
     const image = [];
@@ -195,7 +191,6 @@ export const updateProductController = async (req, res) => {
         description,
         price,
         category,
-        quantity,
         in_stock,
         slug: slugify(name),
         image: image,
@@ -237,19 +232,28 @@ export const getSingleProductController = async (req, res) => {
     });
   }
 };
-// get all api product
+// get all api reviews
 
-export const getProductController = async (req, res) => {
+export const getReviewsProductController = async (req, res) => {
   try {
     const product = await productModel
       .find({})
-      .populate("category")
+      .populate({
+        path: "review", // Populate the reviews for each product
+        select: "rating comment", // Select only the 'rating' field from reviews
+      })
       .sort({ createdAt: -1 });
+
+    const reviews = product.map((product) => {
+      return {
+        reviews: product.review,
+      };
+    });
     res.status(200).send({
       success: true,
       message: "Successfully Fetched All product",
-      countTotal: product.length,
-      product,
+      countTotal: reviews.length,
+      reviews,
     });
   } catch (error) {
     console.log(error);
@@ -348,7 +352,8 @@ export const getSimilarProductController = async (req, res) => {
     const products = await productModel
       .find({ category: cid, _id: { $ne: pid } })
       .limit(4)
-      .populate("category");
+      .populate("category")
+      .populate("review");
     res.status(200).send({
       success: true,
       products,

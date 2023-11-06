@@ -1,10 +1,12 @@
 import { React } from 'react';
 import Cart from "./pages/Cart.jsx";
+import About from './pages/About.jsx';
 import Search from './pages/Search.jsx';
+import Misc from './pages/Admin/Misc.jsx';
 import Login from "./pages/Auth/Login.jsx";
 import CheckOut from "./pages/CheckOut.jsx";
 import HomePage from "./pages/HomePage.jsx";
-// import Wishlist from './pages/Wishlist.jsx';
+import Wishlist from './pages/Wishlist.jsx';
 import SignUp from "./pages/Auth/Signup.jsx";
 import Categories from './pages/Categories.jsx';
 import { Routes, Route } from "react-router-dom";
@@ -12,6 +14,7 @@ import UserShow from "./pages/Admin/UserShow.jsx";
 import UserOrder from "./pages/user/UserOrder.jsx";
 import PageNotFount from "./pages/PageNotFount.jsx";
 import CategoryList from './pages/CategoryList.jsx';
+import AdminOrder from './pages/Admin/AdminOrder.jsx';
 import SingleProduct from "./pages/SingleProduct.jsx";
 import UserProfile from "./pages/user/UserProfile.jsx";
 import ProductAdmin from "./pages/Admin/ProductAdmin.jsx";
@@ -23,9 +26,6 @@ import UpdateProduct from "./pages/Admin/UpdateProduct.jsx";
 import ForgotPassword from "./pages/Auth/ForgotPassword.jsx";
 import AdminDashboard from "./pages/Admin/AdminDashboard.jsx";
 import CreateCategory from "./pages/Admin/CreateCategory.jsx";
-import About from './pages/About.jsx';
-import AdminOrder from './pages/Admin/AdminOrder.jsx';
-import Misc from './pages/Admin/Misc.jsx';
 
 // import Misc from './pages/misc.jsx';
 
@@ -49,7 +49,7 @@ function App() {
 
         <Route path="/checkout" element={<CheckOut />} />
         <Route path="/cart" element={<Cart />} />
-        {/* <Route path="/wishlist" element={<Wishlist />} /> */}
+        <Route path="/wishlist" element={<Wishlist />} />
 
         <Route path="/single-product/:slug" element={<SingleProduct />} />
 

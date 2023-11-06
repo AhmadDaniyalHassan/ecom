@@ -1,7 +1,6 @@
 import { useState, useContext, createContext, useEffect } from "react";
+
 const CartContext = createContext();
-
-
 
 const CartProvider = ({ children }) => {
     const [cart, setCart] = useState([]);
@@ -13,6 +12,9 @@ const CartProvider = ({ children }) => {
         }
 
     }, [])
+
+
+
     const increaseQuantity = (itemId) => {
         const updatedCart = cart.map((item) => {
             if (item._id === itemId) {
@@ -26,7 +28,7 @@ const CartProvider = ({ children }) => {
         });
         updateCart(updatedCart);
     };
-    
+
     const decreaseQuantity = (itemId) => {
         const updatedCart = cart.map((item) => {
             if (item._id === itemId) {
@@ -42,6 +44,7 @@ const CartProvider = ({ children }) => {
         });
         updateCart(updatedCart);
     };
+
     return (
         <CartContext.Provider value={[cart, increaseQuantity, decreaseQuantity, setCart]}>
             {children}

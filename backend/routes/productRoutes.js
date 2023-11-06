@@ -5,7 +5,7 @@ import {
   searchProductController,
   brainTreeTokenController,
   brainTreePaymentsController,
-  getProductController,
+  getReviewsProductController,
   createFilterProductController,
   updateProductController,
   deleteProductController,
@@ -48,7 +48,7 @@ productRouter.get("/search/:keyword", searchProductController);
 //user route
 // productRouter.get("/get-product", getProductController)
 productRouter.get("/single-product/:slug", getSingleProductController);
-productRouter.get("/get-product/", getProductController);
+productRouter.get("/get-product-review/", getReviewsProductController);
 
 productRouter.delete("/delete-product/:pid", deleteProductController);
 

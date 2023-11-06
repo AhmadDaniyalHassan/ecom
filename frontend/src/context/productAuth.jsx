@@ -1,27 +1,30 @@
-import { useState, useContext, createContext, useEffect } from "react";
+// import { useState, useContext, createContext, useEffect } from "react";
 
-const ProductContext = createContext();
+// const ProductContext = createContext();
 
-const ProductProvider = ({ children }) => {
-  const [productAuth, setProductAuth] = useState([]);
+// const ProductProvider = ({ children }) => {
+//   const [allProducts, setAllProducts] = useState([]);
 
-  useEffect(() => {
-    let existingProductAuth = localStorage.getItem('productauth');
-    if (existingProductAuth) {
-      setProductAuth(JSON.parse(existingProductAuth));
-    }
-  }, []);
+//   useEffect(() => {
+//     let existingProduct = localStorage.getItem('cart')
+//     if (existingProduct) {
+//       setAllProduts(JSON.parse(existingProduct))
+//     }
 
-  // Function to add cart items to productAuth
+//   }, [])
 
-  return (
-    <ProductContext.Provider value={{ productAuth }}>
-      {children}
-    </ProductContext.Provider>
-  );
-}
 
-// Custom hook
-const useProduct = () => useContext(ProductContext);
 
-export { useProduct, ProductProvider };
+
+
+//   return (
+//     <ProductContext.Provider value={[allProducts, setAllProducts]}>
+//       {children}
+//     </ProductContext.Provider>
+//   )
+// }
+
+// // custom hook
+// const useProduct = () => useContext(ProductContext)
+
+// export { useProduct, ProductProvider }

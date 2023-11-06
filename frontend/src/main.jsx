@@ -11,7 +11,7 @@ import store from './store/store.js'
 import 'antd/dist/reset.css';
 // import { ThemeProvider } from "./context/theme.jsx";
 import { SearchProvider } from './context/search.jsx'
-import { ProductProvider } from './context/productAuth.jsx'
+// import { ProductProvider } from './context/productAuth.jsx'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   // <ThemeProvider>
@@ -19,13 +19,13 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <SearchProvider>
       <Provider store={store}>
         <CartProvider>
-          <ProductProvider>
+          {/* <ProductProvider> */}
             <WishlistProvider>
               <BrowserRouter>
                 <App />
               </BrowserRouter >
             </WishlistProvider>
-          </ProductProvider>
+          {/* </ProductProvider> */}
         </CartProvider>
       </Provider>
     </SearchProvider>

@@ -53,19 +53,21 @@ const AdminOrder = () => {
                             <div key={i} className='border shadow'>
                                 <table className='table'>
                                     <thead>
-                                        <tr>
+                                        <tr className='text-center'>
                                             <th scope='col'>#</th>
                                             <th scope='col'>Status</th>
-                                            <th scope='col'>Buyer Name</th>
-                                            <th scope='col'>Buyer Email</th>
-                                            <th scope='col'>Buyer Phone</th>
-                                            <th scope='col'>Order Time</th>
+                                            <th scope='col'>Buyer</th>
+                                            <th scope='col'>Email</th>
+                                            <th scope='col'>Address</th>
+                                            <th scope='col'>Phone</th>
+                                            <th scope='col'>Order Date</th>
                                             <th scope='col'>Payment Status</th>
                                             <th scope='col'>Total Products</th>
+                                            <th scope='col'>Grand Total</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
+                                        <tr className='text-center'>
                                             <td>{i + 1}</td>
                                             <td>
                                                 <Select defaultValue={o?.status} bordered={false} onChange={(value, orderId) => handleChange(o._id, value)}>
@@ -76,25 +78,25 @@ const AdminOrder = () => {
                                             </td>
                                             <td>{o?.purchaser?.name}</td>
                                             <td>{o?.purchaser?.email}</td>
+                                            <td>{o?.purchaser?.address}</td>
                                             <td>{o?.purchaser?.phone}</td>
-                                            <td>{moment(o?.createAt).fromNow()}</td>
+                                            <td>{moment(o?.createdAt).format('MMMM Do YYYY, h:mm a')}</td>
                                             <td>{o?.payment?.success ? "Success" : "Failed"}</td>
                                             <td>{o?.products?.length}</td>
+                                            <td>{o?.total}</td>
                                         </tr>
                                     </tbody>
                                 </table>
                                 <div className="container">
-                                    {o?.products.map((p, i) => (
-                                        <div  className='d-flex mb-2 mt-2'>
-                                            <img style={{ padding: '1px', width: '10rem', marginTop: '2px', marginRight: '4px', borderRadius: '10px' }}
-                                              
-                                                className='card-img-top'  />
-
-                                            <div className='mt-3'>
-                                                <p className='mb-1'><b>Name:</b> {console.log(p)}</p>
-                                                <p className='mb-1'><b>Info:</b> {}...</p>
-                                                <p className='mb-1'><b>Price: </b>{}</p>
-                                                <p className='mb-1'><b>Quantity: </b>{}</p>
+                                    <h3 className='mx-4'>Products</h3>
+                                    {o.products.map((prod, k) => (
+                                        <div className='flex d-flex' key={k}>
+                                            <img style={{ padding: '2px', width: '12.5rem', height: '11.5rem', marginTop: '2px', borderRadius: '10px' }}
+                                                src={prod.image} className='card-img-top mx-4 my-2' alt={prod.name} />
+                                            <div>
+                                                <p className='m-2'><b>Name: </b> {prod.name}</p>
+                                                <p className='m-2'><b>Quantity Of Each Order Product: </b> {prod.quantity}</p>
+                                                <p className='m-2'><b>Price Without Shipment: </b> {prod.total || (Number(prod.price) * prod.quantity)}</p>
                                             </div>
                                         </div>
                                     ))}

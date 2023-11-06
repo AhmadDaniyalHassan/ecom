@@ -223,6 +223,13 @@ const Product = () => {
                                 <div className="card w-auto"  >
                                     {/* Product image*/}
                                     <img style={{ height: "10rem", width: "13.0rem", padding: '4px', marginLeft: '6px', borderRadius: 10, objectFit: "cover", }} src={p?.image} alt={p?.name} />
+                                    <StarRatings
+                                        rating={averageRating}
+                                        starRatedColor="gold"
+                                        starEmptyColor="lightgray"
+                                        starDimension="20px"
+                                        starSpacing="2px"
+                                    />
                                     <div className="card-body p-3">
                                         <div className="text-center">
 

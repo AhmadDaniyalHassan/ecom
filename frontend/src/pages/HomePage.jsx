@@ -21,6 +21,11 @@ const HomePage = () => {
     const [wishlist, setWishlist] = useWishlist();
     const [loading, setLoading] = useState(false);
     const [review, setReview] = useState([]);
+    const [reviews, setReviews] = useState([]);
+    const [productId, setProductId] = useState('')
+
+
+
 
     const getAllProduct = async () => {
         try {
@@ -28,6 +33,9 @@ const HomePage = () => {
             const { data } = await axios.get(`http://localhost:8000/api/product/product-list/${page}`)
             setLoading(false)
             setProduct(data?.products)
+            setProductId(data?.products?._id)
+
+            fetchReviews()
         } catch (error) {
             setLoading(false)
             console.log(error)
@@ -76,29 +84,6 @@ const HomePage = () => {
         }
     }
 
-    const getAllRating = async () => {
-        try {
-            const { data } = await axios.get('http://localhost:8000/api/product//get-product-review/')
-            if (data?.success) {
-                setReview(data.reviews)
-            }
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
-    const renderStarRating = (rating) => {
-        return (
-            <StarRatings
-                rating={rating}
-                starRatedColor="gold"
-                starEmptyColor="lightgray"
-                starDimension="20px"
-                starSpacing="2px"
-            />
-        );
-    };
-
     const removeFromCart = (itemId) => {
         const updatedCart = cart.filter((item) => item._id !== itemId);
         setCart(updatedCart);
@@ -133,7 +118,7 @@ const HomePage = () => {
 
 
     useEffect(() => {
-        if (!checked.length || !radio.length) getAllProduct(); getAllRating();
+        if (!checked.length || !radio.length) getAllProduct();
         //eslint-disable-next-line
     }, [checked.length, radio.length])
 
@@ -200,9 +185,6 @@ const HomePage = () => {
                             <div className='card m-2 ' style={{ width: "17rem", height: '24.5rem' }} key={pdata._id}>
                                 <img style={{ height: "10rem", width: "15.0rem", padding: '4px', marginLeft: '6px', borderRadius: 10, objectFit: "cover" }} src={pdata.image} className='card-img-top' alt={pdata.name} />
                                 <div className='card-body p-0'>
-                                    {review.map((rev, index) => (
-                                        <p key={index}>Rating: {renderStarRating(rev.rating)}</p>
-                                    ))}
                                     <h5 className='card-title mb-1' style={{ marginLeft: "9px" }}><b>Name: </b>{pdata?.name}</h5>
                                     <p className='card-text mb-1' style={{ marginLeft: "9px" }}><b>Info: </b>{pdata?.description.substring(0, 25)}...</p>
                                     <p className='card-text mb-1' style={{ marginLeft: "9px" }}><b>Price: </b> {pdata?.price}</p>

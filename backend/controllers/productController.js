@@ -390,7 +390,7 @@ export const productListController = async (req, res) => {
     const products = await productModel
       .find({})
       .skip((page - 1) * perPage)
-      .populate("category")
+      .populate("category review")
       .limit(perPage)
       .sort({ createdAt: -1 });
     res.status(200).send({

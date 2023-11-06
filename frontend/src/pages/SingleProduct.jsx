@@ -1,4 +1,4 @@
-import React, { useState, useEffect, lazy, Suspense } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useParams } from "react-router-dom"
 import Layout from "../components/layout/Layout"
 import axios from 'axios'
@@ -8,7 +8,6 @@ import { Link } from "react-router-dom"
 import { useAuth } from '../context/auth'
 import moment from 'moment'
 import StarRatings from 'react-star-ratings';
-import toast from 'react-hot-toast'
 
 const Product = () => {
 
@@ -76,20 +75,25 @@ const Product = () => {
             console.log(error)
         }
     }
-    const handleAddToCart = (productData) => {
-        const existingProduct = cart.find(item => item._id === productData._id)
+    const handleAddToCart = (product) => {
+        const existingProduct = cart.find((item) => item._id === product._id);
 
         if (existingProduct) {
-            // Remove from cart if already added
-            const updatedCart = cart.filter(item => item._id !== productData._id)
-            setCart(updatedCart)
-            localStorage.setItem('cart', JSON.stringify(updatedCart))
+            // If the product already exists in the cart, increase its quantity by 1
+            updateQuantity(existingProduct._id, existingProduct.quantity + 1);
         } else {
-            // Add to cart if not already added
-            setCart([...cart, productData])
-            localStorage.setItem('cart', JSON.stringify([...cart, productData]))
+            // If it's a new product, add it to the cart with a quantity of 1
+            const newProduct = { ...product, quantity: 1, total: product.price }; // Set the initial total price
+            setCart([...cart, newProduct]);
+            localStorage.setItem('cart', JSON.stringify([...cart, newProduct]));
+        }
+    };
+    const inQuantity = (id, newQuantity) => {
+        if (newQuantity < 1) {
+            newQuantity = 1;
         }
     }
+
 
 
 
@@ -110,7 +114,6 @@ const Product = () => {
     return (
         <Layout title="Product-Single - Ecom" >
             <button style={{ marginTop: 15, marginLeft: 15 }} className='btn btn-primary' onClick={() => navigate(-1)}>Go Back</button>
-
             <section className="py-2">
                 <div className="container px-4 px-lg-5 my-5">
                     <div className="row gx-4 gx-lg-5 align-items-start">
@@ -123,7 +126,6 @@ const Product = () => {
                             <div className="fs-5 mb-1">
                                 <span>Price: {product?.price}&nbsp;&nbsp;</span>
                             </div>
-
                             <div className="d-flex">
                                 <button
                                     onClick={() => handleAddToCart(product)}

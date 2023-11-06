@@ -14,6 +14,14 @@ const orderSchema = new mongoose.Schema(
         total: {
           type: Number,
         },
+        name: {
+          type: String,
+        },
+        image: [
+          {
+            type: String,
+          },
+        ],
       },
     ],
     total: {

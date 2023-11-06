@@ -75,20 +75,25 @@ const HomePage = () => {
         }
     }
 
-    const handleAddToCart = (productData) => {
-        const existingProduct = cart.find(item => item._id === productData._id)
+    const handleAddToCart = (product) => {
+        const existingProduct = cart.find((item) => item._id === product._id);
 
         if (existingProduct) {
-            // Remove from cart if already added
-            const updatedCart = cart.filter(item => item._id !== productData._id)
-            setCart(updatedCart)
-            localStorage.setItem('cart', JSON.stringify(updatedCart))
+            // If the product already exists in the cart, increase its quantity by 1
+            updateQuantity(existingProduct._id, existingProduct.quantity + 1);
         } else {
-            // Add to cart if not already added
-            setCart([...cart, productData])
-            localStorage.setItem('cart', JSON.stringify([...cart, productData]))
+            // If it's a new product, add it to the cart with a quantity of 1
+            const newProduct = { ...product, quantity: 1, total: product.price }; // Set the initial total price
+            setCart([...cart, newProduct]);
+            localStorage.setItem('cart', JSON.stringify([...cart, newProduct]));
+        }
+    };
+    const inQuantity = (id, newQuantity) => {
+        if (newQuantity < 1) {
+            newQuantity = 1;
         }
     }
+
 
     const handleFilter = (value, id) => {
 

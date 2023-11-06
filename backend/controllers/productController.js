@@ -57,8 +57,8 @@ export const brainTreePaymentsController = async (req, res) => {
       productsToUpdate.push({
         _id: orderItem._id,
         quantity: orderItem.quantity,
-        name: product.name,
-        image:product.image
+        name: orderItem.name,
+        image: orderItem.image,
       });
     });
 

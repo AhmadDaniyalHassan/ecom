@@ -5,7 +5,6 @@ import { useAuth } from '../context/auth'
 import { useNavigate } from 'react-router-dom'
 import DropIn from "braintree-web-drop-in-react";
 import axios from 'axios'
-
 const AddToCart = () => {
   const [auth, setAuth] = useAuth()
   const [cart, increaseQuantity, decreaseQuantity, setCart] = useCart()
@@ -13,6 +12,7 @@ const AddToCart = () => {
   const [instance, setInstance] = useState('')
   const [loading, setLoading] = useState(false)
   const [quantity, setQuantity] = useState(1)
+
   const navigate = useNavigate()
   let shipping = 350
 
@@ -29,7 +29,7 @@ const AddToCart = () => {
     if (newQuantity < 1) {
       newQuantity = 1;
     }
-   
+
     const updatedCart = cart.map((prod) => {
       if (prod._id === id) {
         // Calculate the new total price based on the updated quantity
@@ -134,7 +134,7 @@ const AddToCart = () => {
                       <p className='mb-2'><b>Info:</b> {prod.description.substring(0, 10)}...</p>
                       <p className='mb-2'><b>Price: </b>{prod.total || Number(prod.price * prod.quantity)}</p>
                       <button onClick={() => inQuantity(prod._id, prod.quantity + 1)}>+</button>
-                      <span>{  }</span>
+                      <span>{prod.quantity}</span> {/* Display the product's quantity */}
                       <button onClick={() => deQuantity(prod._id, prod.quantity - 1)}>−</button>
                       <button onClick={() => removeFromCart(prod._id)}>Remove</button>
                     </div>

@@ -206,11 +206,8 @@ export const getOrdersController = async (req, res) => {
   try {
     const orders = await orderModel
       .find({ purchaser: req.user._id })
-      .populate({
-        path: "products.product",
-        select: "name image", // Select the name and image fields from the product
-      })
-      .populate("purchaser", "name");
+      .populate("products")
+      .populate("purchaser", "name email address phone");
     res.json(orders);
   } catch (error) {
     console.log(error);
@@ -219,7 +216,6 @@ export const getOrdersController = async (req, res) => {
       .send({ success: false, message: "Error While Getting Orders", error });
   }
 };
-
 export const getAllOrdersController = async (req, res) => {
   try {
     const orders = await orderModel

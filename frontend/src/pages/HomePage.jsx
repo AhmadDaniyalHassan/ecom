@@ -20,12 +20,23 @@ const HomePage = () => {
     const [cart, increaseQuantity, decreaseQuantity, setCart] = useCart();
     const [wishlist, setWishlist] = useWishlist();
     const [loading, setLoading] = useState(false);
-    const [review, setReview] = useState([]);
-    const [reviews, setReviews] = useState([]);
     const [productId, setProductId] = useState('')
 
 
+    // const fetchReviews = async () => {
+    //     try {
+    //         const response = await axios.get(`http://localhost:8000/api/review/${productId}/get-reviews`, {
+    //             params: { page },
+    //         });
 
+    //         setReviews(response?.data?.reviews);
+    //         console.log(response?.data)
+    //         setLoading(false)
+    //     } catch (error) {
+    //         console.error('Error Coming from reviews get request:', error);
+    //         setLoading(false)
+    //     }
+    // };
 
     const getAllProduct = async () => {
         try {
@@ -33,9 +44,6 @@ const HomePage = () => {
             const { data } = await axios.get(`http://localhost:8000/api/product/product-list/${page}`)
             setLoading(false)
             setProduct(data?.products)
-            setProductId(data?.products?._id)
-
-            fetchReviews()
         } catch (error) {
             setLoading(false)
             console.log(error)
@@ -71,6 +79,7 @@ const HomePage = () => {
 
     useEffect(() => {
         getTotal(); getCategory();
+
     }, [])
 
     const getCategory = async () => {

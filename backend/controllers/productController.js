@@ -6,6 +6,7 @@ import fs from "fs";
 import cloudinary from "cloudinary";
 import dotenv from "dotenv";
 import braintree from "braintree";
+import reviewModel from "../models/reviewModel.js";
 dotenv.config();
 
 // payment gateway
@@ -234,26 +235,17 @@ export const getSingleProductController = async (req, res) => {
 };
 // get all api reviews
 
-export const getReviewsProductController = async (req, res) => {
+export const getProductController = async (req, res) => {
   try {
     const product = await productModel
       .find({})
-      .populate({
-        path: "review", // Populate the reviews for each product
-        select: "rating comment", // Select only the 'rating' field from reviews
-      })
+      .populate("category")
       .sort({ createdAt: -1 });
-
-    const reviews = product.map((product) => {
-      return {
-        reviews: product.review,
-      };
-    });
     res.status(200).send({
       success: true,
       message: "Successfully Fetched All product",
-      countTotal: reviews.length,
-      reviews,
+      countTotal: product.length,
+      product,
     });
   } catch (error) {
     console.log(error);
@@ -390,9 +382,24 @@ export const productListController = async (req, res) => {
     const products = await productModel
       .find({})
       .skip((page - 1) * perPage)
-      .populate("category review")
+      .populate("category")
       .limit(perPage)
       .sort({ createdAt: -1 });
+
+    for (const product of products) {
+      const reviews = await reviewModel.find({ productId: product._id });
+      if (reviews.length > 0) {
+        const totalRating = reviews.reduce(
+          (acc, review) => acc + review.rating,
+          0
+        );
+        product.averageRating =
+          Math.round((totalRating / reviews.length) * 2) / 2;
+      } else {
+        product.averageRating = 0; // No reviews, so the average rating is 0.
+      }
+    }
+
     res.status(200).send({
       success: true,
       products,

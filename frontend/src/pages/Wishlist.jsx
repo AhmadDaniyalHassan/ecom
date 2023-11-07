@@ -1,17 +1,22 @@
-import React from 'react'
-import Layout from "../components/layout/Layout"
-import { useWishlist } from '../context/wishlist'
-import { useCart } from '../context/cart'
-const Wishlist = () => {
-    const [wishlist, setWishlist] = useWishlist()
-    const [cart, increaseQuantity, decreaseQuantity, setCart] = useCart()
+import React from 'react';
+import Layout from "../components/layout/Layout";
+import { useWishlist } from '../context/wishlist';
+import { useCart } from '../context/cart';
 
-    const removeFromWishlist = (id) => {
-        const updatedWishlist = wishlist.filter(item => item.id !== id);
+const Wishlist = () => {
+    const [wishlist, setWishlist] = useWishlist();
+    const [cart, increaseQuantity, decreaseQuantity, setCart] = useCart();
+
+    const removeFromWishlist = (_id) => {
+        const updatedWishlist = wishlist.filter(item => item._id !== _id);
         setWishlist(updatedWishlist);
+        localStorage.setItem("wishlist", JSON.stringify(updatedWishlist));
+
     };
+
     const handleAddToCart = (item) => {
-        const existingProduct = cart.find((item) => item._id === item._id);
+        // Check if the item is already in the cart
+        const existingProduct = cart.find((cartItem) => cartItem._id === item._id);
 
         if (existingProduct) {
             // If the product already exists in the cart, increase its quantity by 1
@@ -23,53 +28,63 @@ const Wishlist = () => {
             localStorage.setItem('cart', JSON.stringify([...cart, newProduct]));
         }
     };
-    const removeFromCart = () => {
-        const updatedCart = cart.filter((item) => item._id !== item._id);
+
+    const removeFromCart = (item) => {
+        const updatedCart = cart.filter((cartItem) => cartItem._id !== item._id);
         setCart(updatedCart);
         localStorage.setItem("cart", JSON.stringify(updatedCart));
     };
 
+    // Filter out duplicate items in the wishlist
+    const uniqueWishlist = wishlist.filter((item, index, self) => (
+        self.findIndex((otherItem) => otherItem._id === item._id) === index
+    ));
 
     return (
         <Layout title={"Wishlist - Ecom"}>
             <div className="container mt-5">
                 <h1>My Wishlist</h1>
                 <div className="row">
-                    {wishlist.map((item, index) => (
-                        <div className="col-md-4" key={index}>
-                            <div className="card mb-3">
-                                <img src={item.image} className="card-img-top" alt={item.name} />
+                    {uniqueWishlist.map((item, index) => (
+                        <div className="col-md-4 flex d-flex " >
+                            <div className='card m-2 ' style={{ width: "19rem", height: '24.5rem' }} key={index}>
+                                <img style={{ height: "10rem", width: "15.0rem", padding: '4px', marginLeft: '6px', borderRadius: 10, objectFit: "cover" }} src={item.image} className="card-img-top" alt={item.name} />
                                 <div className="card-body">
-                                    <h5 className="card-title">{item.name}</h5>
-                                    <p className="card-text">{item.description}</p>
-                                    <p className="card-text">${item.price}</p>
-                                    <button className="btn btn-danger" onClick={() => removeFromWishlist(item.id)}>
-                                        Remove from Wishlist
-                                    </button>
-                                    <div className="d-flex">
-                                        {cart.find(item => item._id === item._id) ? (
-                                            // Render the "Remove" button if the condition is false
-
-                                            <button style={{ fontSize: "85%", overflow: 'hidden' }} className='btn btn-outline-dark mt-auto' onClick={() => removeFromCart(item)}>Remove From Cart</button>
-                                        ) : (
-                                            // Render the "Add To Cart" button if the condition is true
-                                            <button
-                                                onClick={() => handleAddToCart(item)}
-                                                className='btn btn-outline-dark mt-auto'
-                                                style={{ fontSize: "85%", overflow: 'hidden' }}
-                                            >
-                                                {cart.find(item => item._id === item._id)} Add To Cart
-                                            </button>
-                                        )}
-                                    </div>
+                                    <h5 className="card-title text-center m-2">Name: {item.name}</h5>
+                                    <p className="card-text text-center m-2">Description: {item.description}</p>
+                                    <p className="card-text text-center m-2">Price: {item.price}</p>
                                 </div>
+                                <div className="d-flex justify-content-around p-2">
+                                    <button
+                                        onClick={() => removeFromWishlist(item._id)}
+                                        className='btn btn-danger mt-auto '
+                                        style={{ fontSize: "85%", overflow: 'hidden' }}
+                                    >
+                                        Remove From Wishlist
+                                    </button>
+
+                                    {cart.find(cartItem => cartItem._id === item._id) ? (
+                                        // Render the "Remove" button if the condition is false
+                                        <button style={{ fontSize: "85%", overflow: 'hidden' }} className='btn btn-outline-dark mt-auto' onClick={() => removeFromCart(item)}>Remove From Cart</button>
+                                    ) : (
+                                        // Render the "Add To Cart" button if the condition is true
+                                        <button
+                                            onClick={() => handleAddToCart(item)}
+                                            className='btn btn-outline-dark mt-auto'
+                                            style={{ fontSize: "85%", overflow: 'hidden' }}
+                                        >
+                                            Add To Cart
+                                        </button>
+                                    )}
+                                </div>
+
                             </div>
                         </div>
                     ))}
                 </div>
             </div>
-        </Layout >
-    )
-}
+        </Layout>
+    );
+};
 
-export default Wishlist
+export default Wishlist;

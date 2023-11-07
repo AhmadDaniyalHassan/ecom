@@ -9,7 +9,9 @@ import { useAuth } from '../context/auth'
 import moment from 'moment'
 import StarRatings from 'react-star-ratings';
 
+
 const Product = () => {
+    const [api, setApi] = useState([]);
 
     const [product, setProduct] = useState([])
     const [cart, increaseQuantity, decreaseQuantity, setCart] = useCart()
@@ -37,6 +39,26 @@ const Product = () => {
             setLoading(false)
         }
     };
+    const FetchApi = async () => {
+        try {
+            const FetchData = await axios.get(`http://localhost:8000/api/review/${productId}/get-questions`, {
+                params: { page },
+            })
+            console.log(FetchData.data)
+            console.log(FetchData?.data.questions)
+            setApi(FetchData?.data)
+
+        }
+        catch (error) {
+            console.log(error)
+        }
+    }
+
+
+    useEffect(() => {
+
+        FetchApi();
+    }, [])
 
 
     const handleLoadMore = () => {
@@ -135,7 +157,6 @@ const Product = () => {
                             <h2 className="display-8 fw-bolder mb-1"><span className='text-muted h3'>Name:</span> {product?.name}</h2>
                             <div className="lead mb-1">Category: {product?.category?.name}</div>
                             <p className="lead mb-1">Description: {product?.description}</p>
-                            <p className="lead mb-1">Quantity: {product?.quantity}</p>
                             <StarRatings
                                 rating={averageRating}
                                 starRatedColor="gold"
@@ -223,16 +244,8 @@ const Product = () => {
                                 <div className="card w-auto"  >
                                     {/* Product image*/}
                                     <img style={{ height: "10rem", width: "13.0rem", padding: '4px', marginLeft: '6px', borderRadius: 10, objectFit: "cover", }} src={p?.image} alt={p?.name} />
-                                    <StarRatings
-                                        rating={averageRating}
-                                        starRatedColor="gold"
-                                        starEmptyColor="lightgray"
-                                        starDimension="20px"
-                                        starSpacing="2px"
-                                    />
                                     <div className="card-body p-3">
                                         <div className="text-center">
-
                                             <b>Name: </b>{p?.name}<br></br>
                                             <b>Category: </b>{p?.category?.name}<br></br>
                                             {/* Product name*/}

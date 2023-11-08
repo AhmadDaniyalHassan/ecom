@@ -21,10 +21,25 @@ export const verifyToken = async (req, res, next) => {
 export const isAdmin = async (req, res, next) => {
   try {
     const user = await userModel.findById(req.user._id);
-    if (user.role !== 1) {
+
+    if (user.role !== 1 || !user.active) {
       return res
-        .status(401)
-        .send({ success: false, message: "UnAuthorized Access" });
+        .status(403)
+        .send({ success: false, message: "Unauthorized Access" });
+    }
+
+    // If the admin is trying to disable another admin, they need to be an active admin
+    if (req.path.includes("/disable-admin/")) {
+      const targetUserId = req.params.userId;
+      const targetUser = await userModel.findById(targetUserId);
+
+      if (targetUser && targetUser.role === 1 && targetUser.active) {
+        next();
+      } else {
+        return res
+          .status(403)
+          .send({ success: false, message: "Unauthorized Access" });
+      }
     } else {
       next();
     }

@@ -1,39 +1,69 @@
-import React, { useState, useEffect } from 'react'
-import Layout from '../../components/layout/Layout'
-import AdminMenu from '../../components/layout/AdminMenu'
-import axios from 'axios'
-import { useAuth } from '../../context/auth'
-import moment from 'moment'
-import { useNavigate } from 'react-router-dom'
+import React, { useState, useEffect } from 'react';
+import Layout from '../../components/layout/Layout';
+import AdminMenu from '../../components/layout/AdminMenu';
+import axios from 'axios';
+import { useAuth } from '../../context/auth';
+import moment from 'moment';
+import { useNavigate } from 'react-router-dom';
 
 const UserShow = () => {
-  const [user, setUser] = useState([])
-  const [admin, setAdmin] = useState([])
-  const [auth, setAuth] = useAuth()
-  const navigate = useNavigate()
-
+  const [user, setUser] = useState([]);
+  const [admin, setAdmin] = useState([]);
+  const [auth, setAuth] = useAuth();
+  const navigate = useNavigate();
 
   const getAllUsers = async () => {
     try {
-      const { data } = await axios.get('http://localhost:8000/api/user/get-user')
-      setUser(data?.users)
+      const { data } = await axios.get('http://localhost:8000/api/user/get-user');
+      setUser(data?.users);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
-  const getAllAdmins = async () => {
-    try {
-      const { data } = await axios.get('http://localhost:8000/api/user/get-admin')
-      setAdmin(data?.users)
-    } catch (error) {
-      console.log(error)
-    }
+  };
 
-  }
+  const getAllActiveAdmins = async () => {
+    try {
+
+      const loggedInAdminUserId = auth.user._id
+      const { data } = await axios.get(`http://localhost:8000/api/user/get-active-admins/${loggedInAdminUserId}`);
+      setAdmin(data?.users);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleDelete = async (userId) => {
+    try {
+      const { data } = await axios.delete(`http://localhost:8000/api/user/delete-user/${userId}`);
+      console.log(data);
+      getAllUsers(); // Refresh the user list after deletion.
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleToggleAdmin = async (userId, isActive) => {
+    try {
+      // Send a request to toggle the admin's status based on their current status
+      const response = await axios.put(`http://localhost:8000/api/user/toggle-admin/${userId}`);
+
+      if (response.data.success) {
+        // Update the local state to toggle the active status
+        const updatedAdmins = admin.map((adminUser) =>
+          adminUser._id === userId ? { ...adminUser, active: !isActive } : adminUser
+        );
+        setAdmin(updatedAdmins);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
-    if (auth?.token) getAllUsers(); getAllAdmins()
-  }, [auth?.token])
+    if (auth?.token) {
+      getAllUsers(); getAllActiveAdmins()
+    }
+  }, [auth?.token]);
 
   return (
     <Layout title='Show Users'>
@@ -44,12 +74,12 @@ const UserShow = () => {
           <div className="col-md-2 margin-admin">
             <AdminMenu />
           </div>
-          <div className='col-md-9 '>
+          <div className='col-md-9'>
             <h2 className="text-center mb-0">All Users Information</h2>
-            <h4 className='mb-1 mt-1'>Admin Users</h4>
+            <h4 className='mb-1 mt-1 mb-2'>Admin Users</h4>
             {admin?.map((o, i) => (
-              <div key={i} className='border shadow rounded' >
-                <table className='table  mb-0 table-dark' >
+              <div key={i} className='border shadow rounded'>
+                <table className='table mb-0 table-dark'>
                   <thead>
                     <tr className='text-center '>
                       <th scope='col'>#</th>
@@ -69,23 +99,25 @@ const UserShow = () => {
                       <td>{o?.address}</td>
                       <td>{o?.phone}</td>
                       <td>{moment(o?.createAt).format("dddd, MMMM, Do, YYYY")}</td>
-                      <td><button className='btn btn-danger'>Delete</button></td>
+                      <td><button onClick={() => handleToggleAdmin(o._id, o.active)} className='btn btn-primary'>
+                        {o.active ? 'Disable' : 'Enable'}
+                      </button></td>
                     </tr>
                   </tbody>
                 </table>
               </div>
             ))}
-            <h4 className='mb-1 mt-1'>Consumer Users</h4>
+            <h4 className='mb-1 mt-1 mb-2'>Consumer Users</h4>
             {user?.map((o, i) => (
               <div key={i} className='border shadow rounded'>
                 <table className='table table-dark mb-0'>
                   <thead>
                     <tr className='text-center'>
                       <th scope='col'>#</th>
-                      <th scope='col'>Consumer Name</th>
-                      <th scope='col'>Consumer Email</th>
-                      <th scope='col'>Consumer Address</th>
-                      <th scope='col'>Consumer Phone</th>
+                      <th scope='col'>User Name</th>
+                      <th scope='col'>User Email</th>
+                      <th scope='col'>User Address</th>
+                      <th scope='col'>User Phone</th>
                       <th scope='col'>Created On</th>
                       <th scope='col'>Actions</th>
                     </tr>
@@ -98,7 +130,7 @@ const UserShow = () => {
                       <td>{o?.address}</td>
                       <td>{o?.phone}</td>
                       <td>{moment(o?.createAt).format("dddd, MMMM, Do, YYYY")}</td>
-                      <td><button className='btn btn-danger'>Delete</button></td>
+                      <td><button onClick={() => handleDelete(o._id)} className='btn btn-danger'>Delete</button></td>
                     </tr>
                   </tbody>
                 </table>
@@ -108,7 +140,7 @@ const UserShow = () => {
         </div>
       </div>
     </Layout>
-  )
-}
+  );
+};
 
-export default UserShow
+export default UserShow;

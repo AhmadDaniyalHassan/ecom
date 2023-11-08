@@ -7,10 +7,11 @@ import {
   forgotPasswordController,
   getAllOrdersController,
   getOrderStatus,
-  getAdminUserController,
+  getActiveAdminUsersController,
   getUserController,
   deleteUserController,
   deleteOrderController,
+  toggleAdminController,
 } from "../controllers/userController.js";
 import { isAdmin, verifyToken } from "../middleware/authMiddleware.js";
 
@@ -40,8 +41,16 @@ userRoute.get("/user-auth", verifyToken, (req, res, next) => {
 userRoute.get("/admin-auth", verifyToken, isAdmin, (req, res, next) => {
   res.status(200).send({ ok: true });
 });
+
+userRoute.put(
+  "/toggle-admin/:userId",
+  verifyToken,
+  isAdmin,
+  toggleAdminController
+);
+
 userRoute.get("/get-user", verifyToken, isAdmin, getUserController);
-userRoute.get("/get-admin", verifyToken, isAdmin, getAdminUserController);
+userRoute.get("/get-active-admins/:userId", verifyToken, isAdmin, getActiveAdminUsersController);
 
 //orders
 userRoute.get("/orders", verifyToken, getOrdersController);

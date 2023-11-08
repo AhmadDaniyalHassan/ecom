@@ -22,6 +22,10 @@ const userSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    active: {
+      type: Boolean,
+      default: true, // By default, admin users are active
+    },
     address: {
       type: {},
       required: true,

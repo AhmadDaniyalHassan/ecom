@@ -1,10 +1,12 @@
 import express from "express";
-import { verifyToken } from "../middleware/authMiddleware.js";
+import { isAdmin, verifyToken } from "../middleware/authMiddleware.js";
 import {
   getReviewController,
   postReviewController,
   postQueAnsProductController,
   getQuestionsController,
+  deleteQuestionController,
+  updateAnswerController,
 } from "../controllers/reviewController.js";
 
 const reviewRouter = express.Router();
@@ -21,4 +23,18 @@ reviewRouter.post(
 );
 
 reviewRouter.get("/get-questions/:productId", getQuestionsController);
+
+reviewRouter.delete(
+  "/:productId/delete-questions/:questionId",
+  verifyToken,
+  isAdmin,
+  deleteQuestionController
+);
+reviewRouter.put(
+  "/:productId/ans-questions/:questionId",
+  verifyToken,
+  isAdmin,
+  updateAnswerController
+);
+
 export default reviewRouter;

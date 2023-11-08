@@ -60,12 +60,12 @@ export const getReviewController = async (req, res) => {
 export const postQueAnsProductController = async (req, res) => {
   try {
     const { productId } = req.params;
-    const { questions, title, userId } = req.body; // Update the request body to match your schema
+    const { question, title, userId } = req.body; // Update the request body to match your schema
 
     // Check if the user has already asked a question for this product
     const existingQuestion = await questionModel.findOne({
       userId,
-      "questions.product": productId,
+      product: productId,
     });
 
     if (existingQuestion) {
@@ -75,26 +75,27 @@ export const postQueAnsProductController = async (req, res) => {
     }
 
     // Create a new question
-    const question = new questionModel({
-      questions: [
-        { product: productId, question: questions, title: title, answer: "" },
-      ], // Initialize the question array according to your schema
+    const newQuestion = new questionModel({
+      product: productId,
+      question,
+      title,
+      answer: "",
       userId,
     });
 
     // Save the question to the database
-    await question.save();
+    await newQuestion.save();
 
     // Optionally, you can associate the question with the product if needed
     // Example: Add the question's ID to the product's questions array
     await productModel.findByIdAndUpdate(productId, {
-      $push: { question: question._id }, // Ensure it matches your schema
+      $push: { questions: newQuestion._id }, // Ensure it matches your schema
     });
 
     res.status(201).json({
       success: true,
       message: "Question Created Successfully",
-      question,
+      question: newQuestion,
     });
   } catch (error) {
     console.error(error);
@@ -109,14 +110,50 @@ export const getQuestionsController = async (req, res) => {
     const { productId } = req.params;
 
     // Find all questions related to the given product
-    const questions = await questionModel.find({
-      "questions.product": productId,
-    });
+    const question = await questionModel
+      .find({ product: productId })
+      .populate("userId", "name");
 
     res.status(200).json({
       success: true,
       message: "Questions retrieved successfully",
-      questions,
+      question,
+    });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ success: false, message: "Error retrieving questions.", error });
+  }
+};
+
+export const deleteQuestionController = async (req, res) => {
+  try {
+    const { questionId } = req.params;
+    await questionModel.findByIdAndDelete(questionId);
+    res.status(200).json({
+      success: true,
+      message: "Question deleted successfully",
+    });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ success: false, message: "Error retrieving questions.", error });
+  }
+};
+
+export const updateAnswerController = async (req, res) => {
+  try {
+    const { questionId } = req.params;
+    const { answer } = req.body;
+    const question = await questionModel.findByIdAndUpdate(questionId, {
+      answer,
+    });
+    res.status(200).json({
+      success: true,
+      message: "Answer updated successfully",
+      question,
     });
   } catch (error) {
     console.error(error);

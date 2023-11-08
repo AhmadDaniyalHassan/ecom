@@ -90,14 +90,23 @@ export const loginController = async (req, res) => {
     if (!email || !password) {
       return res.send({ error: "Invalid email or password" });
     }
-    // check user exist or not
 
+    // check user exist or not
     const user = await userModel.findOne({ email });
     if (!user) {
       return res
         .status(404)
         .send({ success: false, message: "Email not Registered" });
     }
+
+    // Check if the user is active
+    if (!user.active) {
+      return res.status(403).send({
+        success: false,
+        message: "User is disabled and cannot log in",
+      });
+    }
+
     //matching password validation
     const match = await comparedPassword(password, user.password);
     if (!match) {
@@ -272,14 +281,15 @@ export const getUserController = async (req, res) => {
   }
 };
 
-export const getAdminUserController = async (req, res) => {
+export const getActiveAdminUsersController = async (req, res) => {
   try {
+    const loggedInAdminUserId = req.params.userId; // Get the logged-in admin user's ID
     const users = await userModel
-      .find({ role: 1 })
-      .select("name address createdAt phone email");
+      .find({ role: 1, active: true, _id: { $ne: loggedInAdminUserId } }) // Exclude the logged-in admin user
+      .select("name address createdAt active phone email");
     res.status(200).send({
       success: true,
-      message: "Fetching Admin User Succesfull",
+      message: "Fetching Active Admin Users Successfully",
       users,
     });
   } catch (error) {
@@ -290,6 +300,47 @@ export const getAdminUserController = async (req, res) => {
   }
 };
 
+export const toggleAdminController = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const user = await userModel.findById(userId);
+
+    if (!user) {
+      return res
+        .status(404)
+        .send({ success: false, message: "User not found" });
+    }
+
+    // If the user is an admin
+    if (user.role === 1) {
+      if (user.active) {
+        // Toggle the "active" status for admin users
+        user.active = !user.active;
+        await user.save();
+        res.status(200).send({
+          success: true,
+          message: `Admin status for user with ID ${userId} has been toggled`,
+        });
+      } else {
+        // If the admin is disabled, enable them
+        user.active = true;
+        await user.save();
+        res.status(200).send({
+          success: true,
+          message: `Admin user with ID ${userId} has been enabled`,
+        });
+      }
+    } else {
+      res.status(403).send({ success: false, message: "Unauthorized Access" });
+    }
+  } catch (error) {
+    console.log(error);
+    res
+      .status(500)
+      .send({ success: false, error, message: "Error toggling admin status" });
+  }
+};
+
 export const deleteUserController = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -297,7 +348,6 @@ export const deleteUserController = async (req, res) => {
     res.status(200).send({
       success: true,
       message: "User Deleted Successfully",
-      user,
     });
   } catch (error) {
     console.log(error);

@@ -72,7 +72,7 @@ const CreateProduct = () => {
                     <div className="col-md-2 margin-admin">
                         <AdminMenu />
                     </div>
-                    <div className='col-md-9'>
+                    <div className='col-md-8'>
                         <h3 className="text-center">Create Product</h3>
                         <div className='m-1'></div>
                         <form onSubmit={handleSubmit}>

@@ -33,20 +33,17 @@ export const brainTreeTokenController = async (req, res) => {
 
 export const brainTreePaymentsController = async (req, res) => {
   try {
-    const { cart, nonce } = req.body;
+    const { cart, nonce, paymentMethod } = req.body;
     let total = 350;
-    const productsToUpdate = []; // To track products that need quantity updates
-    let quantityError = false; // Flag to check if any product has a zero quantity
+    const productsToUpdate = [];
+    let quantityError = false;
 
-    // Calculate the total and update the productsToUpdate array
-    cart.map((orderItem) => {
+    cart.forEach((orderItem) => {
       if (orderItem.quantity <= 0) {
-        // Handle the case where quantity is zero
         quantityError = true;
         return;
       }
       if (quantityError) {
-        // Respond with an error message if any product has zero quantity
         res
           .status(400)
           .json({ error: "One or more products have a quantity of zero." });
@@ -63,47 +60,71 @@ export const brainTreePaymentsController = async (req, res) => {
       });
     });
 
-    // Create a Braintree transaction
-    let newTransaction = gateway.transaction.sale(
-      {
-        amount: total,
-        paymentMethodNonce: nonce,
-        options: {
-          submitForSettlement: true,
+    if (paymentMethod === "braintree") {
+      gateway.transaction.sale(
+        {
+          amount: total,
+          paymentMethodNonce: nonce,
+          options: {
+            submitForSettlement: true,
+          },
         },
-      },
-      async function (error, result) {
-        if (result) {
-          // Update product quantities in the Product schema
-          try {
-            for (const productUpdate of productsToUpdate) {
-              const product = await productModel.findById(productUpdate._id);
-              if (product) {
-                // Decrease the product quantity based on the order quantity
-                product.quantity -= productUpdate.quantity;
-                await product.save();
+        async function (error, result) {
+          if (result) {
+            try {
+              for (const productUpdate of productsToUpdate) {
+                const product = await productModel.findById(productUpdate._id);
+                if (product) {
+                  product.quantity -= productUpdate.quantity;
+                  await product.save();
+                }
               }
+            } catch (err) {
+              console.error(err);
             }
-          } catch (err) {
-            console.error(err);
+
+            const order = new orderModel({
+              products: cart,
+              total: total,
+              payment: result,
+              paymentMethod: "Braintree", // Set the payment method
+              purchaser: req.user._id,
+            }).save();
+
+            res.json({ ok: true, order });
+          } else {
+            res.status(500).send(error);
           }
-
-          // Save the order with updated quantities
-          const order = new orderModel({
-            products: cart,
-            total: total, // Set the total outside of the payment
-            payment: result,
-            purchaser: req.user._id,
-          }).save();
-
-          res.json({ ok: true });
-        } else {
-          res.status(500).send(error);
         }
+      );
+    } else if (paymentMethod === "cod") {
+      try {
+        for (const productUpdate of productsToUpdate) {
+          const product = await productModel.findById(productUpdate._id);
+          if (product) {
+            product.quantity -= productUpdate.quantity;
+            await product.save();
+          }
+        }
+
+        const order = new orderModel({
+          products: cart,
+          total: total,
+          paymentMethod: "COD", // Set the payment method
+          purchaser: req.user._id,
+        }).save();
+
+        res.json({ ok: true, order });
+      } catch (error) {
+        console.error(error);
+        res.status(500).send(error);
       }
-    );
+    } else {
+      res.status(400).json({ error: "Unsupported payment method" });
+    }
   } catch (error) {
     console.log(error);
+    res.status(500).send(error);
   }
 };
 

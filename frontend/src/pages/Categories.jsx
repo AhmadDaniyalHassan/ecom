@@ -19,12 +19,10 @@ const Categories = () => {
 
             <div className="container">
 
-                <div className="d-flex justify-content-center mt-3"> <span className="text text-center">Finding Best Products Now<br /> in Your Fingertips</span>
-                </div>
                 <div className="row mt-2 g-4">
-
+                    <h2 className='text-center'>Categories</h2>
                     {categories?.map(c => (
-                        <div className="container d-flex  align-items-center
+                        <div className="container flex d-flex flex-column align-items-center
                          justify-content-center">
                             <Link to={`/category/${c.slug}`} className="d-flex justify-content-between mb-6 text-light align-items-center p-2" >
                                 <div className="card text-light border-0 shadow" style={{ maxWidth: '20em' }}>
@@ -33,7 +31,6 @@ const Categories = () => {
                                             <img src={image.src} alt={c.slug} style={{ maxWidth: '20em' }} />
                                         </div>
                                     ))}
-
                                     <div className="card-img-overlay text-center">
                                         <h5 className="card-title fw-bold fs-1">{c.slug}</h5>
                                         <button className="btn btn-outline-light btn-sm rounded-0 mt-2">Shop Now</button>

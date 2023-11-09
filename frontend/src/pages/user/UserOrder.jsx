@@ -54,6 +54,7 @@ const Order = () => {
                                             <th scope='col'>Email</th>
                                             <th scope='col'>Order Date</th>
                                             <th scope='col'>Payment Status</th>
+                                            <th scope='col'>Payment Method</th>
                                             <th scope='col'>Total Products</th>
                                             <th scope='col'>Grand Total</th>
                                         </tr>
@@ -66,6 +67,7 @@ const Order = () => {
                                             <td>{order?.purchaser?.email}</td>
                                             <td>{moment(order?.createdAt).format('MMMM Do YYYY, h:mm a')}</td>
                                             <td>{order?.payment?.success ? 'Success' : 'Failed'}</td>
+                                            <td>{order?.paymentMethod}</td>
                                             <td>{order?.products.length}</td>
                                             <td>{order.total}</td>
                                         </tr>
@@ -78,7 +80,7 @@ const Order = () => {
                                             src={prod.image} className='card-img-top mx-4 my-2' alt={prod.name} />
                                         <div>
                                             <p className='m-2'><b>Name: </b> {prod.name}</p>
-                                            <p className='m-2'><b>Quantity Of Each Order Product: </b> {prod.quantity}</p>
+                                            <p className='m-2'><b>Quantity Of Each Ordered Product: </b> {prod.quantity}</p>
                                             <p className='m-2'><b>Price Without Shipment: </b> {prod.total || (Number(prod.price) * prod.quantity)}</p>
                                         </div>
                                     </div>

@@ -62,6 +62,7 @@ const AdminOrder = () => {
                                             <th scope='col'>Phone</th>
                                             <th scope='col'>Order Date</th>
                                             <th scope='col'>Payment Status</th>
+                                            <th scope='col'>Payment Method</th>
                                             <th scope='col'>Total Products</th>
                                             <th scope='col'>Grand Total</th>
                                         </tr>
@@ -82,6 +83,7 @@ const AdminOrder = () => {
                                             <td>{o?.purchaser?.phone}</td>
                                             <td>{moment(o?.createdAt).format('MMMM Do YYYY, h:mm a')}</td>
                                             <td>{o?.payment?.success ? "Success" : "Failed"}</td>
+                                            <td>{o?.paymentMethod}</td>
                                             <td>{o?.products?.length}</td>
                                             <td>{o?.total}</td>
                                         </tr>

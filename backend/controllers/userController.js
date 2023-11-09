@@ -2,6 +2,7 @@ import { comparedPassword, hashPassword } from "../helper/userHelper.js";
 import userModel from "../models/userModel.js";
 import JWT from "jsonwebtoken";
 import orderModel from "../models/orderModel.js";
+import { createTransport } from "nodemailer";
 //signup or say register method POST
 
 export const registerController = async (req, res) => {
@@ -140,36 +141,120 @@ export const loginController = async (req, res) => {
 // forgot password
 export const forgotPasswordController = async (req, res) => {
   try {
-    //validation
-    const { email, newpassword, answer } = req.body;
+    const { email } = req.body;
+
     if (!email) {
-      res.status({ success: false, message: "Email is Required" });
-    }
-    if (!newpassword) {
-      res.status({ success: false, message: "New Password is Required" });
-    }
-    if (!answer) {
-      res.status({ success: false, message: "Answer is Required" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Email is required" });
     }
 
-    //checking
-    const user = userModel.findOne({ email, answer });
+    // Check if the user exists
+    const user = await userModel.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User with this email does not exist",
+      });
+    }
+
+    // Generate a reset code (you can use a library like 'crypto' for this)
+    const resetCode = generateResetCode();
+
+    // Store the reset code and its expiration in the user document
+    user.resetCode = resetCode;
+    user.resetCodeExpiration = Date.now() + 3600000; // 30 minute (adjust as needed)
+    await user.save();
+
+    // Send a password reset email with the reset code
+    const transporter = createTransport({
+      host: "sandbox.smtp.mailtrap.io",
+      port: 2525,
+      secure: false,
+      auth: {
+        user: "cad80a34cbe479",
+        pass: "d25ff9cbd3e89e",
+      },
+    });
+
+    const mailData = {
+      from: "daahhas121@gmail.com",
+      to: email,
+      subject: "Password Reset Request",
+      text: `Your password reset code is: ${resetCode}`,
+      // You can also include an 'html' property for an HTML email.
+    };
+
+    await transporter.sendMail(mailData);
+
+    res.status(200).json({
+      success: true,
+      message: "Password reset code sent to your email",
+    });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ success: false, message: "Something Went Wrong", error });
+  }
+};
+
+// Example of a function to generate a reset code
+function generateResetCode() {
+  const code = Math.random().toString(36).substring(2, 8); // Generate a 6-character code
+  return code;
+}
+
+export const resetPasswordController = async (req, res) => {
+  try {
+    const { email, resetCode, newPassword } = req.body;
+
+    if (!email || !resetCode || !newPassword) {
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: "Email, Reset Code, and New Password are required",
+        });
+    }
+
+    // Check if the user with the provided email exists
+    const user = await userModel.findOne({ email });
+
     if (!user) {
       return res
         .status(404)
-        .send({ success: false, message: "Wrong Email or Answer" });
+        .json({
+          success: false,
+          message: "User with this email does not exist",
+        });
     }
 
-    const hashed = await hashPassword(newpassword);
-    await userModel.findByIdAndUpdate(user._id, { password: hashed });
+    // Check if the reset code matches and has not expired
+    if (user.resetCode !== resetCode || user.resetCodeExpiration < Date.now()) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid or expired reset code" });
+    }
+
+    // Generate a new hashed password
+    const hashed = await hashPassword(newPassword);
+
+    // Update the user's password and clear the reset code and expiration
+    user.password = hashed;
+    user.resetCode = undefined;
+    user.resetCodeExpiration = undefined;
+    await user.save();
+
     res
       .status(200)
-      .send({ success: true, message: "Password Reset Successfully" });
+      .json({ success: true, message: "Password reset successful" });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     res
       .status(500)
-      .send({ success: false, message: "Something Went Wrong", error });
+      .json({ success: false, message: "Something Went Wrong", error });
   }
 };
 
@@ -238,6 +323,24 @@ export const getAllOrdersController = async (req, res) => {
     res.status(500).send({
       success: false,
       message: "Error While Getting All Orders",
+      error,
+    });
+  }
+};
+
+export const getAllOrdersCODController = async (req, res) => {
+  try {
+    const codOrders = await Order.find({ "payment.method": "Cash On Delivery" })
+      .populate("products")
+      .populate("purchaser", "name address email phone quantity")
+      .sort({ createdAt: "-1" });
+
+    res.json(codOrders);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({
+      success: false,
+      message: "Error While Getting COD Orders",
       error,
     });
   }

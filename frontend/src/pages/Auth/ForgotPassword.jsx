@@ -9,8 +9,7 @@ import Footer from '../../components/layout/Footer'
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('')
-  const [newpassword, setNewPassword] = useState('')
-  const [answer, setAnswer] = useState('')
+  const [loading, setLoading] = useState(false); // Add a loading state
 
 
 
@@ -18,12 +17,14 @@ const ForgotPassword = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    setLoading(true);
+
     try {
       const response = await axios.post("http://localhost:8000/api/user/forgot-password",
-        { email, newpassword, answer });
+        { email });
       if (response && response.data) {
         // console.log("response coming from forgot password api okay : ", response.data)
-        navigate("/login")
+        navigate("/resetpassword")
       }
     } catch (error) {
       console.log("Error from forgot password api xD", error)
@@ -45,16 +46,10 @@ const ForgotPassword = () => {
               <input required value={email} onChange={(e) => setEmail(e.target.value)} placeholder='Enter Your Email' type="email" className="form-control" />
               <div className="form-text"></div>
             </div>
-            <div className="mb-3">
-              <input required value={newpassword} onChange={(e) => setNewPassword(e.target.value)} placeholder='Enter Your New Password' type="password" className="form-control" />
-              <div className="form-text"></div>
-            </div>
-            <div className="mb-3">
-              <input required value={answer} onChange={(e) => setAnswer(e.target.value)} placeholder='Enter Your Secret Answer' type="text" className="form-control" />
-              <div className="form-text"></div>
-            </div>
             <div className='text-center'>
-              <button type="submit" className="btn btn-primary">Reset Password</button>
+              <button type="submit" className="btn btn-primary" disabled={loading}>
+                {loading ? 'Loading...' : 'Reset Password'}
+              </button>
             </div>
           </form>
         </div>

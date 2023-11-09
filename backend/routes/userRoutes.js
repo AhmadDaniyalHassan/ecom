@@ -12,6 +12,8 @@ import {
   deleteUserController,
   deleteOrderController,
   toggleAdminController,
+  getAllOrdersCODController,
+  resetPasswordController,
 } from "../controllers/userController.js";
 import { isAdmin, verifyToken } from "../middleware/authMiddleware.js";
 
@@ -30,6 +32,7 @@ userRoute.delete(
 );
 // forgetpassword
 userRoute.post("/forgot-password", forgotPasswordController);
+userRoute.post("/reset-code-password", resetPasswordController);
 
 // auth user
 userRoute.get("/user-auth", verifyToken, (req, res, next) => {
@@ -50,11 +53,22 @@ userRoute.put(
 );
 
 userRoute.get("/get-user", verifyToken, isAdmin, getUserController);
-userRoute.get("/get-active-admins/:userId", verifyToken, isAdmin, getActiveAdminUsersController);
+userRoute.get(
+  "/get-active-admins/:userId",
+  verifyToken,
+  isAdmin,
+  getActiveAdminUsersController
+);
 
 //orders
 userRoute.get("/orders", verifyToken, getOrdersController);
 userRoute.get("/all-orders", verifyToken, isAdmin, getAllOrdersController);
+userRoute.get(
+  "/all-cod-orders",
+  verifyToken,
+  isAdmin,
+  getAllOrdersCODController
+);
 userRoute.put("/order-status/:orderId", verifyToken, isAdmin, getOrderStatus);
 userRoute.delete(
   "/delete-order/:orderId",

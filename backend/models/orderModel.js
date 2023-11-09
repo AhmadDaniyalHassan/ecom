@@ -28,7 +28,10 @@ const orderSchema = new mongoose.Schema(
       type: Number,
     },
     payment: {},
-
+    paymentMethod: {
+      type: String,
+      enum: ["Braintree", "COD"], // Add the COD payment option
+    },
     purchaser: {
       type: mongoose.ObjectId,
       ref: "User",

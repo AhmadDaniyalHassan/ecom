@@ -26,6 +26,7 @@ import UpdateProduct from "./pages/Admin/UpdateProduct.jsx";
 import ForgotPassword from "./pages/Auth/ForgotPassword.jsx";
 import AdminDashboard from "./pages/Admin/AdminDashboard.jsx";
 import CreateCategory from "./pages/Admin/CreateCategory.jsx";
+import RestPassword from './pages/Auth/RestPassword.jsx';
 
 // import Misc from './pages/misc.jsx';
 
@@ -42,6 +43,8 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/forgetpassword" element={<ForgotPassword />} />
+        <Route path="/resetpassword" element={<RestPassword />} />
+
         <Route path="/signup" element={<SignUp />} />
         <Route path="/about" element={<About />} />
         <Route path="/categories" element={<Categories />} />

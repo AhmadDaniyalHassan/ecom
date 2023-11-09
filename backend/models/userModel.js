@@ -30,6 +30,12 @@ const userSchema = mongoose.Schema(
       type: {},
       required: true,
     },
+    resetCode: {
+      type: String, // Store the reset code here
+    },
+    resetCodeExpiration: {
+      type: Date, // Store the reset code expiration time here
+    },
     answer: {
       type: String,
     },

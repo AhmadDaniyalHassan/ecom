@@ -22,22 +22,6 @@ const HomePage = () => {
     const [loading, setLoading] = useState(false);
     const [productId, setProductId] = useState('')
 
-
-    // const fetchReviews = async () => {
-    //     try {
-    //         const response = await axios.get(`http://localhost:8000/api/review/${productId}/get-reviews`, {
-    //             params: { page },
-    //         });
-
-    //         setReviews(response?.data?.reviews);
-    //         console.log(response?.data)
-    //         setLoading(false)
-    //     } catch (error) {
-    //         console.error('Error Coming from reviews get request:', error);
-    //         setLoading(false)
-    //     }
-    // };
-
     const getAllProduct = async () => {
         try {
             setLoading(true)
@@ -191,7 +175,7 @@ const HomePage = () => {
                     <h4 className='text-center'>Home</h4>
                     <div style={{ justifyContent: 'center' }} className='d-flex flex-wrap'>
                         {product?.map((pdata) => (
-                            <div className='card m-2 ' style={{ width: "17rem", height: '24.5rem' }} key={pdata._id}>
+                            <div className='card m-2 ' style={{ width: "15.7rem", height: '24.5rem' }} key={pdata._id}>
                                 <img style={{ height: "10rem", width: "15.0rem", padding: '4px', marginLeft: '6px', borderRadius: 10, objectFit: "cover" }} src={pdata.image} className='card-img-top' alt={pdata.name} />
                                 <div className='card-body p-0'>
                                     <h5 className='card-title mb-1' style={{ marginLeft: "9px" }}><b>Name: </b>{pdata?.name}</h5>

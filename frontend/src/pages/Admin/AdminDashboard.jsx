@@ -10,8 +10,8 @@ const AdminDashboard = () => {
     const [auth] = useAuth()
     return (
         <Layout>
-            <button style={{ marginTop: 15, marginLeft: 15 }} className='btn btn-primary' onClick={() => navigate(-1)}>Go Back</button>
-            <div className='container-fluid m-2 p-0 '>
+            <button style={{ marginTop: 15, marginLeft: 15, marginBottom:15 }} className='btn btn-primary' onClick={() => navigate(-1)}>Go Back</button>
+            <div className='container-fluid m-3 p-3 '>
                 <div className='row'>
                     <div className='col-md-2 margin-admin'>
                         <AdminMenu />

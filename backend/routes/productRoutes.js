@@ -54,14 +54,15 @@ productRouter.delete("/delete-product/:pid", deleteProductController);
 
 // payment route
 productRouter.get("/braintree/token", brainTreeTokenController);
-
 productRouter.post(
   "/braintree/payment",
   verifyToken,
   brainTreePaymentsController
 );
+
 // category controller nav
 productRouter.get("/product-category/:slug", productCategoryController);
+
 // similarproduct
 productRouter.get("/similar-product/:pid/:cid", getSimilarProductController);
 

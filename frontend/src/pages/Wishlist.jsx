@@ -42,43 +42,35 @@ const Wishlist = () => {
 
     return (
         <Layout title={"Wishlist - Ecom"}>
-            <div className="container mt-5">
+            <div className="container mt-3">
                 <h1>My Wishlist</h1>
                 <div className="row">
                     {uniqueWishlist.map((item, index) => (
-                        <div className="col-md-4 flex d-flex " >
-                            <div className='card m-2 ' style={{ width: "19rem", height: '24.5rem' }} key={index}>
-                                <img style={{ height: "10rem", width: "15.0rem", padding: '4px', marginLeft: '6px', borderRadius: 10, objectFit: "cover" }} src={item.image} className="card-img-top" alt={item.name} />
-                                <div className="card-body">
-                                    <h5 className="card-title text-center m-2">Name: {item.name}</h5>
-                                    <p className="card-text text-center m-2">Description: {item.description}</p>
-                                    <p className="card-text text-center m-2">Price: {item.price}</p>
-                                </div>
-                                <div className="d-flex justify-content-around p-2">
-                                    <button
-                                        onClick={() => removeFromWishlist(item._id)}
-                                        className='btn btn-danger mt-auto '
-                                        style={{ fontSize: "85%", overflow: 'hidden' }}
-                                    >
-                                        Remove From Wishlist
-                                    </button>
-
-                                    {cart.find(cartItem => cartItem._id === item._id) ? (
-                                        // Render the "Remove" button if the condition is false
-                                        <button style={{ fontSize: "85%", overflow: 'hidden' }} className='btn btn-outline-dark mt-auto' onClick={() => removeFromCart(item)}>Remove From Cart</button>
-                                    ) : (
-                                        // Render the "Add To Cart" button if the condition is true
-                                        <button
-                                            onClick={() => handleAddToCart(item)}
-                                            className='btn btn-outline-dark mt-auto'
-                                            style={{ fontSize: "85%", overflow: 'hidden' }}
-                                        >
-                                            Add To Cart
-                                        </button>
-                                    )}
-                                </div>
-
-                            </div>
+                        <div key={index} style={{ width: "25%", backgroundColor: '#E8E8E8', borderRadius: "20px" }} className='row mb-2 p-2 card flex-row'>
+                            {/* <div className='card m-2' style={{ width: "19rem", height: '24.5rem' }} key={index}> */}
+                            <img style={{ height: "11rem", width: "19.0rem", padding: '4px', marginLeft: '6px', borderRadius: 10, objectFit: "cover" }} src={item.image} className="card-img-top" alt={item.name} />
+                            <h5 className="card-title text-center m-2">Name: {item.name}</h5>
+                            <p className="card-text text-center m-2">Description: {item.description}</p>
+                            <p className="card-text text-center m-2">Price: {item.price}</p>
+                            <button
+                                onClick={() => removeFromWishlist(item._id)}
+                                className='btn btn-danger mt-auto '
+                                style={{ fontSize: "85%", overflow: 'hidden', marginBottom: '10px' }}
+                            >Remove From Wishlist
+                            </button>
+                            {cart.find(cartItem => cartItem._id === item._id) ? (
+                                // Render the "Remove" button if the condition is false
+                                <button style={{ fontSize: "85%", overflow: 'hidden' }} className='btn btn-outline-dark mt-auto' onClick={() => removeFromCart(item)}>Remove From Cart</button>
+                            ) : (
+                                // Render the "Add To Cart" button if the condition is true
+                                <button
+                                    onClick={() => handleAddToCart(item)}
+                                    className='btn btn-outline-dark mt-auto'
+                                    style={{ fontSize: "85%", overflow: 'hidden' }}
+                                >
+                                    Add To Cart
+                                </button>
+                            )}
                         </div>
                     ))}
                 </div>

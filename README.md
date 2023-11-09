@@ -7,19 +7,25 @@ This repository contains the source code and documentation for an Ecommerce webs
 - User authentication and authorization (signup, login, logout)
 - Product browsing and searching
 - Shopping cart functionality
-- Checkout process with payment integration
-- Order management
+- Checkout process with payment integration Also payment integration with COD
+- Admin Can Manage Orders They can change the order status as well as delete the orders
 - Admin panel for managing products, orders, and users
 - Responsive design for mobile and desktop devices
 - Secure password hashing and storage
 - RESTful API for seamless communication between the frontend and backend
 - Product Reviews Functionality
+- Product FAQ Functionality
 - Delete, Update, Create and Edit Product from Frontend with the help of Backend RESTful API
 - Pagination System to Load More Products
 - Seamless Navigation Between Pages
-- Subscribe to Our News & Offers Mail with NodeMailer
-- Resetting User Account Password Functionality
+- News letter Functionality with NodeMailer
+- Resetting User Account Password Functionality with nodeMailer
 - Admin Can Add, Delete, Edit Category Functionality
+- Admin Can Disable or Enable Other Admin Accounts
+- Admin Can Delete Consumer Users Accounts
+- Filtering based on Prices and Filtering based on Category
+- Pagination Functionality with products and reviews
+- Wishlist Functionality
 
 ## Technologies Used
 

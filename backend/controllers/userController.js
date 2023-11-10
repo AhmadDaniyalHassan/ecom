@@ -13,7 +13,7 @@ export const registerController = async (req, res) => {
       return res.send({ message: "Name is required" });
     }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email || emailRegex.test(email)) {
+    if (!email) {
       return res.send({
         message: "Email is required or format is not accurate",
       });
@@ -28,11 +28,11 @@ export const registerController = async (req, res) => {
         });
       }
       const phoneRegex = /^\d{11}$/;
-      if (!phone || phoneRegex.test(phone)) {
+      if (!phone) {
         return res.send({ message: "Phone is required" });
       }
 
-      if (!address || address.length < 10) {
+      if (!address) {
         return res.send({
           message: "Address is required or its not 10 character long",
         });

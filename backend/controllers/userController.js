@@ -169,17 +169,18 @@ export const forgotPasswordController = async (req, res) => {
 
     // Send a password reset email with the reset code
     const transporter = createTransport({
-      host: "sandbox.smtp.mailtrap.io",
-      port: 2525,
+      host: process.env.SMTP,
+      port: process.env.PORTS,
       secure: false,
       auth: {
-        user: "cad80a34cbe479",
-        pass: "d25ff9cbd3e89e",
+        user: process.env.USER,
+
+        pass: process.env.PASSED,
       },
     });
 
     const mailData = {
-      from: "daahhas121@gmail.com",
+      from: process.env.MYEMAIL,
       to: email,
       subject: "Password Reset Request",
       text: `Your password reset code is: ${resetCode}`,

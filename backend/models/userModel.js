@@ -36,9 +36,6 @@ const userSchema = mongoose.Schema(
     resetCodeExpiration: {
       type: Date, // Store the reset code expiration time here
     },
-    answer: {
-      type: String,
-    },
     role: {
       type: Number,
       default: 0,

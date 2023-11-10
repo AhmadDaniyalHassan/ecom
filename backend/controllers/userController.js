@@ -7,19 +7,18 @@ import { createTransport } from "nodemailer";
 
 export const registerController = async (req, res) => {
   try {
-    const { name, email, password, phone, address, answer, role } = req.body;
+    const { name, email, password, phone, address, role } = req.body;
     //validation
     if (!name) {
       return res.send({ message: "Name is required" });
     }
-    if (!email) {
-      return res.send({ message: "Email is required" });
-    } else {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email)) {
-        return res.send({ message: "Invalid email format" });
-      }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || emailRegex.test(email)) {
+      return res.send({
+        message: "Email is required or format is not accurate",
+      });
     }
+
     if (!password) {
       return res.send({ message: "Password is required" });
     } else {
@@ -28,25 +27,15 @@ export const registerController = async (req, res) => {
           message: "Password should be at least 6 characters",
         });
       }
-      if (!phone) {
+      const phoneRegex = /^\d{11}$/;
+      if (!phone || phoneRegex.test(phone)) {
         return res.send({ message: "Phone is required" });
-      } else {
-        const phoneRegex = /^\d{11}$/;
-        if (!phoneRegex.test(phone)) {
-          return res.send({ message: "Invalid phone number format" });
-        }
       }
-      if (!address) {
-        return res.send({ message: "Address is required" });
-      }
-      if (!answer) {
-        return res.send({ message: "Answer is required" });
-      } else {
-        if (answer.length < 4 || answer.length > 12) {
-          return res.send({
-            message: "Answer should be between 4 and 12 characters",
-          });
-        }
+
+      if (!address || address.length < 10) {
+        return res.send({
+          message: "Address is required or its not 10 character long",
+        });
       }
       //check if user already exist
 
@@ -66,7 +55,6 @@ export const registerController = async (req, res) => {
         email,
         phone,
         address,
-        answer,
         role,
         password: hashpass,
       }).save();
@@ -212,24 +200,20 @@ export const resetPasswordController = async (req, res) => {
     const { email, resetCode, newPassword } = req.body;
 
     if (!email || !resetCode || !newPassword) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Email, Reset Code, and New Password are required",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Email, Reset Code, and New Password are required",
+      });
     }
 
     // Check if the user with the provided email exists
     const user = await userModel.findOne({ email });
 
     if (!user) {
-      return res
-        .status(404)
-        .json({
-          success: false,
-          message: "User with this email does not exist",
-        });
+      return res.status(404).json({
+        success: false,
+        message: "User with this email does not exist",
+      });
     }
 
     // Check if the reset code matches and has not expired

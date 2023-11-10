@@ -44,6 +44,8 @@ jobs:
         SMTP: ${{ secrets.SMTP }}
         PORTS: ${{ secrets.PORTS }}
         PORT: ${{ secrets.PORT }}
+        PASSED: ${{ secrets.PASSED }}
+        USER: ${{ secrets.USER }}
 
 
 

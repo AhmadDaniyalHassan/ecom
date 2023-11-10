@@ -1,13 +1,5 @@
 name: Backend CI/CD
 
-on:
-  push:
-    branches:
-      - main
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
 
 env:
    MONGO_URI: ${{ secrets.MONGO_URI }}
@@ -26,6 +18,15 @@ env:
    PORTS: ${{ secrets.PORTS }}
 
 
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
@@ -37,6 +38,7 @@ env:
 
       - name: Install Dependencies
         run: cd backend && npm install
+
 
       - name: Run Server
         run: cd backend && npm run server

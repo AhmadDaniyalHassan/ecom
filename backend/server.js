@@ -20,6 +20,8 @@ app.use(morgan("dev"));
 
 app.use(express.static("uploads"));
 
+
+
 app.use("/api/user", userRoute);
 app.use("/api/category", categoryRouter);
 app.use("/api/product", productRouter);

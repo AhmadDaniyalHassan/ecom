@@ -65,6 +65,7 @@ Contributions to this project are welcome and encouraged. Here are some ways you
 - Suggest new features or enhancements by creating a [pull request](https://github.com/
 
 your-username/ecomm/pulls).
+
 - Help with documentation improvements.
 - Spread the word about the project and encourage others to contribute.
 

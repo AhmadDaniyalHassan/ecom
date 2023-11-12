@@ -26,7 +26,6 @@ app.use("/api/user", userRoute);
 app.use("/api/category", categoryRouter);
 app.use("/api/product", productRouter);
 app.use("/api/review", reviewRouter);
-// app.use("/api/checkout", orderRouter);
 
 connectDB();
 const port = process.env.PORT;

@@ -14,6 +14,8 @@ import {
   toggleAdminController,
   getAllOrdersCODController,
   resetPasswordController,
+  postNewLetterController,
+  unpostNewLetterController,
 } from "../controllers/userController.js";
 import { isAdmin, verifyToken } from "../middleware/authMiddleware.js";
 
@@ -75,5 +77,13 @@ userRoute.delete(
   verifyToken,
   isAdmin,
   deleteOrderController
+);
+
+//newleteer
+userRoute.post("/subscribe-newsletter", verifyToken, postNewLetterController);
+userRoute.post(
+  "/unsubscribe-newsletter",
+  verifyToken,
+  unpostNewLetterController
 );
 export default userRoute;

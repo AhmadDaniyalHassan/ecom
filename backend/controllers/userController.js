@@ -9,7 +9,7 @@ export const registerController = async (req, res) => {
   try {
     const { name, email, password, phone, address, role } = req.body;
     //validation
-    
+
     if (!name) {
       return res.send({ message: "Name is required" });
     }
@@ -118,6 +118,7 @@ export const loginController = async (req, res) => {
         address: user.address,
         role: user.role,
         _id: user._id,
+        newsletterSubscribed: user.newsletterSubscribed,
       },
       token,
     });
@@ -460,5 +461,53 @@ export const deleteOrderController = async (req, res) => {
     res
       .status(500)
       .send({ success: false, error, message: "Error In Deleting Orders" });
+  }
+};
+//newsletter
+export const postNewLetterController = async (req, res) => {
+  try {
+    const { userId } = req.body;
+
+    // Find the user by userId
+    const user = await userModel.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    // Update newsletter subscription status
+    user.newsletterSubscribed = true;
+    await user.save();
+
+    return res
+      .status(200)
+      .json({ message: "Subscribed to the newsletter successfully." });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export const unpostNewLetterController = async (req, res) => {
+  try {
+    const { userId } = req.body;
+
+    // Find the user by userId
+    const user = await userModel.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    // Update newsletter subscription status
+    user.newsletterSubscribed = false;
+    await user.save();
+
+    return res
+      .status(200)
+      .json({ message: "Unsubscribed from the newsletter successfully." });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };

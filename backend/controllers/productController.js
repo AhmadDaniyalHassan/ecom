@@ -276,6 +276,42 @@ export const getProductController = async (req, res) => {
   }
 };
 
+//featured product api
+export const getFeaturedProductController = async (req, res) => {
+  try {
+    const featuredProducts = await productModel.find({ isFeatured: true });
+
+    res.json(featuredProducts);
+  } catch (error) {
+    console.log(error);
+    res
+      .status(500)
+      .send({ success: false, error, message: "Error In Fetching product" });
+  }
+};
+
+export const toggleFeaturedController = async (req, res) => {
+  try {
+    const { productId } = req.params;
+
+    const product = await productModel.findById(productId);
+
+    if (!product) {
+      return res.status(404).json({ success: false, message: "Product not found" });
+    }
+
+    // Toggle the isFeatured field
+    product.isFeatured = !product.isFeatured;
+
+    await product.save();
+
+    res.json({ success: true, message: `Product featured status toggled successfully`, isFeatured: product.isFeatured });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Error in toggle featured status API", error: error.message });
+  }
+};
+
 // delete api product
 
 export const deleteProductController = async (req, res) => {
@@ -324,11 +360,17 @@ export const createFilterProductController = async (req, res) => {
 export const searchProductController = async (req, res) => {
   try {
     const { keyword } = req.params;
+    const parsedKeyword = parseFloat(keyword);
 
     const prod = await productModel.find({
       $or: [
         { name: { $regex: keyword, $options: "i" } },
         { description: { $regex: keyword, $options: "i" } },
+        {
+          price: isNaN(parsedKeyword)
+            ? { $regex: keyword, $options: "i" }
+            : { $lte: parsedKeyword },
+        },
       ],
     });
     res.json(prod);

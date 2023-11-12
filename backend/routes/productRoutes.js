@@ -13,6 +13,8 @@ import {
   productCategoryController,
   getSimilarProductController,
   productCountController,
+  getFeaturedProductController,
+  toggleFeaturedController,
 } from "../controllers/productController.js";
 import { isAdmin, verifyToken } from "../middleware/authMiddleware.js";
 import cloudinary from "cloudinary";
@@ -49,7 +51,13 @@ productRouter.get("/search/:keyword", searchProductController);
 // productRouter.get("/get-product", getProductController)
 productRouter.get("/single-product/:slug", getSingleProductController);
 productRouter.get("/get-product/", getProductController);
-
+productRouter.get("/get-featured-product/", getFeaturedProductController);
+productRouter.put(
+  "/toggle-featured/:productId",
+  verifyToken,
+  isAdmin,
+  toggleFeaturedController
+);
 productRouter.delete("/delete-product/:pid", deleteProductController);
 
 // payment route

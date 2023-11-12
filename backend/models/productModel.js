@@ -37,6 +37,10 @@ const productSchema = mongoose.Schema(
         ref: "Question",
       },
     ],
+    isFeatured: {
+      type: Boolean,
+      default: false,
+    },
     in_stock: {
       type: Boolean,
       required: true,

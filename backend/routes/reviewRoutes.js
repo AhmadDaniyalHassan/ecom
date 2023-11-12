@@ -7,6 +7,7 @@ import {
   getQuestionsController,
   deleteQuestionController,
   updateAnswerController,
+  deleteReviewController,
 } from "../controllers/reviewController.js";
 
 const reviewRouter = express.Router();
@@ -14,7 +15,12 @@ const reviewRouter = express.Router();
 // GET /products/:id
 reviewRouter.post("/:productId/reviews", verifyToken, postReviewController);
 reviewRouter.get("/:productId/get-reviews", getReviewController);
-
+reviewRouter.delete(
+  "/:productId/delete-review/:reviewId",
+  verifyToken,
+  isAdmin,
+  deleteReviewController
+);
 // Q/A api's
 reviewRouter.post(
   "/:productId/post-questions",

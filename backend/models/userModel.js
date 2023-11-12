@@ -30,6 +30,10 @@ const userSchema = mongoose.Schema(
       type: {},
       required: true,
     },
+    newsletterSubscribed: {
+      type: Boolean,
+      default: true, // Set to true by default, change as needed
+    },
     resetCode: {
       type: String, // Store the reset code here
     },

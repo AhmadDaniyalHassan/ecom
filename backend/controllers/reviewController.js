@@ -55,7 +55,67 @@ export const getReviewController = async (req, res) => {
   }
 };
 
+export const deleteReviewController = async (req, res) => {
+  try {
+    const { reviewId } = req.params;
+
+    // Find the review by ID and delete it
+    const deletedReview = await reviewModel.findByIdAndDelete(reviewId);
+
+    if (!deletedReview) {
+      return res.status(404).json({
+        success: false,
+        message: "Review not found.",
+      });
+    }
+
+    // Remove the review ID from the product's reviews array
+    await productModel.findByIdAndUpdate(deletedReview.productId, {
+      $pull: { review: reviewId },
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Review deleted successfully",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Error deleting review.",
+      error,
+    });
+  }
+};
+
 // question and answer api
+
+export const getQuestionsController = async (req, res) => {
+  try {
+    const { productId } = req.params;
+    const { questionPage = 1, limit = 3 } = req.query;
+
+    // Find all questions related to the given product with pagination
+    const questions = await questionModel
+      .find({ product: productId })
+      .limit(limit)
+      .skip((questionPage - 1) * limit)
+      .populate("userId", "name");
+
+    res.status(200).json({
+      success: true,
+      message: "Questions retrieved successfully",
+      questions,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Error retrieving questions.",
+      error,
+    });
+  }
+};
 
 export const postQueAnsProductController = async (req, res) => {
   try {
@@ -63,16 +123,6 @@ export const postQueAnsProductController = async (req, res) => {
     const { question, title, userId } = req.body; // Update the request body to match your schema
 
     // Check if the user has already asked a question for this product
-    const existingQuestion = await questionModel.findOne({
-      userId,
-      product: productId,
-    });
-
-    if (existingQuestion) {
-      return res
-        .status(400)
-        .json({ message: "You can only ask one question per product." });
-    }
 
     // Create a new question
     const newQuestion = new questionModel({
@@ -85,12 +135,6 @@ export const postQueAnsProductController = async (req, res) => {
 
     // Save the question to the database
     await newQuestion.save();
-
-    // Optionally, you can associate the question with the product if needed
-    // Example: Add the question's ID to the product's questions array
-    await productModel.findByIdAndUpdate(productId, {
-      $push: { questions: newQuestion._id }, // Ensure it matches your schema
-    });
 
     res.status(201).json({
       success: true,
@@ -105,32 +149,23 @@ export const postQueAnsProductController = async (req, res) => {
   }
 };
 
-export const getQuestionsController = async (req, res) => {
-  try {
-    const { productId } = req.params;
-
-    // Find all questions related to the given product
-    const question = await questionModel
-      .find({ product: productId })
-      .populate("userId", "name");
-
-    res.status(200).json({
-      success: true,
-      message: "Questions retrieved successfully",
-      question,
-    });
-  } catch (error) {
-    console.error(error);
-    res
-      .status(500)
-      .json({ success: false, message: "Error retrieving questions.", error });
-  }
-};
-
 export const deleteQuestionController = async (req, res) => {
   try {
     const { questionId } = req.params;
-    await questionModel.findByIdAndDelete(questionId);
+    const deletedQuestion = await questionModel.findByIdAndDelete(questionId);
+
+    if (!deletedQuestion) {
+      return res.status(404).json({
+        success: false,
+        message: "Question not found.",
+      });
+    }
+
+    // Remove the review ID from the product's reviews array
+    await productModel.findByIdAndUpdate(deletedQuestion.product, {
+      $pull: { question: questionId },
+    });
+
     res.status(200).json({
       success: true,
       message: "Question deleted successfully",
@@ -147,13 +182,28 @@ export const updateAnswerController = async (req, res) => {
   try {
     const { questionId } = req.params;
     const { answer } = req.body;
-    const question = await questionModel.findByIdAndUpdate(questionId, {
-      answer,
+    const updatedQuestion = await questionModel.findByIdAndUpdate(
+      questionId,
+      { answer },
+      { new: true } // Return the updated question
+    );
+
+    if (!updatedQuestion) {
+      return res.status(404).json({
+        success: false,
+        message: "Question not found.",
+      });
+    }
+
+    // Add the question ID to the product's questions array
+    await productModel.findByIdAndUpdate(updatedQuestion.product, {
+      $push: { question: updatedQuestion._id },
     });
+
     res.status(200).json({
       success: true,
       message: "Answer updated successfully",
-      question,
+      question: updatedQuestion,
     });
   } catch (error) {
     console.error(error);

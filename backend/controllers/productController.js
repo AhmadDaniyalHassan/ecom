@@ -7,6 +7,7 @@ import cloudinary from "cloudinary";
 import dotenv from "dotenv";
 import braintree from "braintree";
 import reviewModel from "../models/reviewModel.js";
+import couponModel from "../models/couponModel.js";
 dotenv.config();
 
 // payment gateway
@@ -30,26 +31,32 @@ export const brainTreeTokenController = async (req, res) => {
     console.log(error);
   }
 };
-
+const handleErrors = (res, error, status = 500) => {
+  console.error(error);
+  res.status(status).send({ error: "Internal Server Error" });
+};
 export const brainTreePaymentsController = async (req, res) => {
   try {
-    const { cart, nonce, paymentMethod } = req.body;
-    let total = 350;
+    const { cart, nonce, paymentMethod, couponCode } = req.body;
+    let total = 350; // Initialize total to zero
+    let discountApplied = false;
     const productsToUpdate = [];
     let quantityError = false;
+    let couponId; // Add this variable to store the coupon ID
 
-    cart.forEach((orderItem) => {
+    // Additional check for total before applying coupon
+    if (total <= 0) {
+      return res
+        .status(400)
+        .json({ error: "Invalid total amount for coupon application." });
+    }
+
+    // Calculate the total amount
+    for (const orderItem of cart) {
       if (orderItem.quantity <= 0) {
         quantityError = true;
-        return;
+        break;
       }
-      if (quantityError) {
-        res
-          .status(400)
-          .json({ error: "One or more products have a quantity of zero." });
-        return;
-      }
-
       total += orderItem.price * orderItem.quantity;
 
       productsToUpdate.push({
@@ -58,47 +65,57 @@ export const brainTreePaymentsController = async (req, res) => {
         name: orderItem.name,
         image: orderItem.image,
       });
-    });
+    }
+
+    if (quantityError) {
+      return res
+        .status(400)
+        .json({ error: "One or more products have a quantity of zero." });
+    }
+    // Check if coupon code is provided
+    if (couponCode) {
+      try {
+        const coupon = await couponModel.findOneAndUpdate(
+          { code: couponCode, discount: false },
+          { $set: { discount: true } },
+          { new: true }
+        );
+        if (coupon) {
+          discountApplied = true;
+          total -= 350; // Assuming the discount amount is 350, adjust it based on your actual value
+        }
+        if (!coupon) {
+          throw new Error(
+            "Invalid coupon. Please remove the coupon fields to proceed with order"
+          );
+        }
+      } catch (error) {
+        return res.status(500).send(error.message);
+      }
+    }
 
     if (paymentMethod === "braintree") {
-      gateway.transaction.sale(
-        {
-          amount: total,
-          paymentMethodNonce: nonce,
-          options: {
-            submitForSettlement: true,
-          },
-        },
-        async function (error, result) {
-          if (result) {
-            try {
-              for (const productUpdate of productsToUpdate) {
-                const product = await productModel.findById(productUpdate._id);
-                if (product) {
-                  product.quantity -= productUpdate.quantity;
-                  await product.save();
-                }
-              }
-            } catch (err) {
-              console.error(err);
-            }
-
-            const order = new orderModel({
-              products: cart,
-              total: total,
-              payment: result,
-              paymentMethod: "Braintree", // Set the payment method
-              purchaser: req.user._id,
-            }).save();
-
-            res.json({ ok: true, order });
-          } else {
-            res.status(500).send(error);
-          }
-        }
-      );
-    } else if (paymentMethod === "cod") {
       try {
+        const result = await new Promise((resolve, reject) => {
+          gateway.transaction.sale(
+            {
+              amount: total,
+              paymentMethodNonce: nonce,
+              options: {
+                submitForSettlement: true,
+              },
+            },
+            (error, result) => {
+              if (error) {
+                reject(error);
+              } else {
+                resolve(result);
+              }
+            }
+          );
+        });
+
+        // Perform asynchronous updates here
         for (const productUpdate of productsToUpdate) {
           const product = await productModel.findById(productUpdate._id);
           if (product) {
@@ -107,24 +124,60 @@ export const brainTreePaymentsController = async (req, res) => {
           }
         }
 
+        // Update the coupon after the order is processed
+        if (discountApplied && couponId) {
+          const updatedCoupon = await couponModel.findByIdAndUpdate(
+            couponId,
+            { discount: true },
+            { new: true }
+          );
+        }
+
+        // Create the order and respond
+        const order = new orderModel({
+          products: cart,
+          total: total,
+          payment: result,
+          paymentMethod: "Braintree", // Set the payment method
+          purchaser: req.user._id,
+          discountApplied: discountApplied,
+        });
+        await order.save();
+        res.json({ success: true, data: order });
+      } catch (error) {
+        // Handle transaction failure
+        res.status(500).send(error);
+      }
+    } else if (paymentMethod === "cod") {
+      try {
+        // Perform asynchronous updates here
+        for (const productUpdate of productsToUpdate) {
+          const product = await productModel.findById(productUpdate._id);
+          if (product) {
+            product.quantity -= productUpdate.quantity;
+            await product.save();
+          }
+        }
+
+        // Create the order and respond
         const order = new orderModel({
           products: cart,
           total: total,
           paymentMethod: "COD", // Set the payment method
           purchaser: req.user._id,
-        }).save();
+          discountApplied: discountApplied,
+        });
+        await order.save();
 
-        res.json({ ok: true, order });
+        res.json({ success: true, data: order });
       } catch (error) {
-        console.error(error);
-        res.status(500).send(error);
+        handleErrors(res, error);
       }
     } else {
       res.status(400).json({ error: "Unsupported payment method" });
     }
   } catch (error) {
-    console.log(error);
-    res.status(500).send(error);
+    handleErrors(res, error);
   }
 };
 
@@ -297,7 +350,9 @@ export const toggleFeaturedController = async (req, res) => {
     const product = await productModel.findById(productId);
 
     if (!product) {
-      return res.status(404).json({ success: false, message: "Product not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Product not found" });
     }
 
     // Toggle the isFeatured field
@@ -305,10 +360,18 @@ export const toggleFeaturedController = async (req, res) => {
 
     await product.save();
 
-    res.json({ success: true, message: `Product featured status toggled successfully`, isFeatured: product.isFeatured });
+    res.json({
+      success: true,
+      message: `Product featured status toggled successfully`,
+      isFeatured: product.isFeatured,
+    });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, message: "Error in toggle featured status API", error: error.message });
+    res.status(500).json({
+      success: false,
+      message: "Error in toggle featured status API",
+      error: error.message,
+    });
   }
 };
 

@@ -1,6 +1,9 @@
 import mongoose from "mongoose";
 
 const couponSchema = new mongoose.Schema({
+  uid: {
+    type: mongoose.Schema.Types.ObjectId,
+  },
   code: {
     type: String,
     unique: true,
@@ -9,6 +12,10 @@ const couponSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  discount: {
+    type: Boolean,
+    default: false,
+  },
   usedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
@@ -16,4 +23,4 @@ const couponSchema = new mongoose.Schema({
   },
 });
 
-export default mongoose.model("Category", couponSchema);
+export default mongoose.model("Coupon", couponSchema);

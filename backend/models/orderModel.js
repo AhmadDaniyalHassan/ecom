@@ -36,6 +36,10 @@ const orderSchema = new mongoose.Schema(
       type: mongoose.ObjectId,
       ref: "User",
     },
+    discountApplied: {
+      type: Boolean,
+      default: false,
+    },
     status: {
       type: String,
       default: "Not Process",

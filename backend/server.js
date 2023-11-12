@@ -10,7 +10,7 @@ import userRoute from "./routes/userRoutes.js";
 import categoryRouter from "../backend/routes/categoryRoutes.js";
 import productRouter from "./routes/productRoutes.js";
 import reviewRouter from "./routes/reviewRoutes.js";
-
+import couponRouter from "./routes/couponRoutes.js";
 dotenv.config();
 
 const app = express();
@@ -20,12 +20,11 @@ app.use(morgan("dev"));
 
 app.use(express.static("uploads"));
 
-
-
 app.use("/api/user", userRoute);
 app.use("/api/category", categoryRouter);
 app.use("/api/product", productRouter);
 app.use("/api/review", reviewRouter);
+app.use("/api/coupon", couponRouter);
 
 connectDB();
 const port = process.env.PORT;

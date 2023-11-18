@@ -30,14 +30,14 @@ const productRouter = express.Router();
 //admin route only
 productRouter.post(
   "/create-product",
-  upload.array("image"),
+  upload.array("images"),
   verifyToken,
   isAdmin,
   createProductController
 );
 productRouter.put(
   "/update-product/:pid",
-  upload.array("image"),
+  upload.array("images"),
   verifyToken,
   isAdmin,
   updateProductController

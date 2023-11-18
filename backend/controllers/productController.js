@@ -63,7 +63,7 @@ export const brainTreePaymentsController = async (req, res) => {
         _id: orderItem._id,
         quantity: orderItem.quantity,
         name: orderItem.name,
-        image: orderItem.image,
+        images: orderItem.images,
       });
     }
 
@@ -185,7 +185,7 @@ export const createProductController = async (req, res) => {
   try {
     const { name, description, price, category, in_stock } = req.body;
 
-    const image = [];
+    const images = [];
 
     switch (true) {
       case !name:
@@ -217,7 +217,7 @@ export const createProductController = async (req, res) => {
     // Upload each image to Cloudinary
     for (const file of req.files) {
       const result = await cloudinary.uploader.upload(file.path);
-      image.push(result.secure_url);
+      images.push(result.secure_url);
       fs.unlinkSync(file.path);
     }
     // Create a new product
@@ -228,7 +228,7 @@ export const createProductController = async (req, res) => {
       category,
       in_stock,
       slug: slugify(name),
-      image: image,
+      images: images,
     });
 
     // Save the product in the database
@@ -250,12 +250,12 @@ export const updateProductController = async (req, res) => {
     const { name, description, price, category, in_stock } = req.body;
     const { pid } = req.params;
 
-    const image = [];
+    const images = [];
 
     const oldProducts = await productModel.find();
     for (const file of req.files) {
       const result = await cloudinary.uploader.upload(file.path);
-      image.push(result.secure_url);
+      images.push(result.secure_url);
       fs.unlinkSync(file.path);
     }
 
@@ -268,7 +268,7 @@ export const updateProductController = async (req, res) => {
         category,
         in_stock,
         slug: slugify(name),
-        image: image,
+        images: images,
       },
       { new: true }
     );
@@ -382,13 +382,21 @@ export const deleteProductController = async (req, res) => {
     const product = await productModel.findByIdAndDelete(req.params.pid);
     if (!product) {
       res.status(400).send({ success: false, message: "Product Not Found" });
+      return;
     }
-    await cloudinary.uploader.destroy;
+    for (const imageUrl of product.images) {
+      // Extract the public ID from the Cloudinary URL
+      const publicId = extractPublicIdFromImageUrl(imageUrl);
+
+      // Delete the image from Cloudinary
+      await cloudinary.uploader.destroy(publicId);
+    }
     res
       .status(200)
       .send({ success: true, message: "Successfully Deleted product" });
   } catch (error) {
     console.log(error);
+    next(error); // Pass the error to the next middleware
     res.status(500).send({
       success: false,
       error,
@@ -397,6 +405,12 @@ export const deleteProductController = async (req, res) => {
     });
   }
 };
+
+function extractPublicIdFromImageUrl(imageUrl) {
+  const startIndex = imageUrl.lastIndexOf("/") + 1;
+  const endIndex = imageUrl.lastIndexOf(".");
+  return imageUrl.substring(startIndex, endIndex);
+}
 
 export const createFilterProductController = async (req, res) => {
   try {
@@ -423,19 +437,17 @@ export const createFilterProductController = async (req, res) => {
 export const searchProductController = async (req, res) => {
   try {
     const { keyword } = req.params;
-    const parsedKeyword = parseFloat(keyword);
 
-    const prod = await productModel.find({
-      $or: [
-        { name: { $regex: keyword, $options: "i" } },
-        { description: { $regex: keyword, $options: "i" } },
-        {
-          price: isNaN(parsedKeyword)
-            ? { $regex: keyword, $options: "i" }
-            : { $lte: parsedKeyword },
-        },
-      ],
-    });
+    const prod = await productModel
+      .find({
+        $or: [
+          { name: { $regex: keyword, $options: "i" } },
+          { description: { $regex: keyword, $options: "i" } },
+        ],
+      })
+      .populate("category") // Populate the 'category' field
+      .exec();
+
     res.json(prod);
   } catch (error) {
     console.log(error);

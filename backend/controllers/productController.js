@@ -515,12 +515,8 @@ export const productCountController = async (req, res) => {
 
 export const productListController = async (req, res) => {
   try {
-    const page =
-      req.params.page && Number.isInteger(parseInt(req.params.page))
-        ? parseInt(req.params.page)
-        : 1;
-
     const perPage = 5;
+    const page = req.params.page ? req.params.page : 1;
     const products = await productModel
       .find({})
       .skip((page - 1) * perPage)

@@ -33,20 +33,17 @@ const useCoupon = async (couponCode, userId) => {
 };
 
 const generateCouponsWithinLimit = async (quantity) => {
-  const currentMonth = new Date().getMonth();
+  // Generate coupons only if the current month is even
+  const existingCouponsCount = await couponModel.countDocuments();
 
-  if (currentMonth % 2 === 0) {
-    // Generate coupons only if the current month is even
-    const existingCouponsCount = await couponModel.countDocuments();
-
-    if (existingCouponsCount < 10) {
-      const remainingCoupons = Math.min(10 - existingCouponsCount, quantity);
-      await generateCoupons(remainingCoupons);
-      return true; // Coupons generated successfully
-    } else {
-      return false; // Coupon generation limit reached for the next 2 months
-    }
+  if (existingCouponsCount < 10) {
+    const remainingCoupons = Math.min(10 - existingCouponsCount, quantity);
+    await generateCoupons(remainingCoupons);
+    return true; // Coupons generated successfully
+  } else {
+    return false; // Coupon generation limit reached for the next 2 months
   }
+
   return false; // No coupons generated for this month
 };
 

@@ -5,7 +5,7 @@ import {
   useCoupon,
   deleteAllCoupons,
 } from "../controllers/couponController.js";
-
+import couponModel from "../models/couponModel.js";
 const couponRouter = express.Router();
 
 couponRouter.get("/generate-coupon", verifyToken, isAdmin, async (req, res) => {
@@ -25,6 +25,20 @@ couponRouter.get("/generate-coupon", verifyToken, isAdmin, async (req, res) => {
     res
       .status(500)
       .json({ success: false, message: "Internal server error", error });
+  }
+});
+//get coupon
+couponRouter.get("/get-coupon", verifyToken, isAdmin, async (req, res) => {
+  try {
+    // Use the find method to retrieve all documents from the Coupon model
+    const coupons = await couponModel.find();
+
+    // Send the retrieved coupons as a response
+    res.status(200).json(coupons);
+  } catch (error) {
+    // Handle any errors that may occur during the database operation
+    console.error(error);
+    res.status(500).send("Internal Server Error fetching coupon");
   }
 });
 

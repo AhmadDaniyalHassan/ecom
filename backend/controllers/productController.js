@@ -332,7 +332,9 @@ export const getProductController = async (req, res) => {
 //featured product api
 export const getFeaturedProductController = async (req, res) => {
   try {
-    const featuredProducts = await productModel.find({ isFeatured: true });
+    const featuredProducts = await productModel
+      .find({ isFeatured: true })
+      .populate("category");
 
     res.json(featuredProducts);
   } catch (error) {
